@@ -4,6 +4,7 @@ import BodyParser from 'koa-bodyparser';
 import KoaCompose from 'koa-compose';
 import Json from 'koa-json';
 import Logger from 'koa-logger';
+import CVProfileRouter from './routes/cv/profile';
 
 import AccessMenuRouter from './routes/setting/access_menu';
 import AccessModulRouter from './routes/setting/access_modul';
@@ -30,6 +31,9 @@ app.use(Json());
 app.use(Logger());
 app.use(BodyParser());
 
+app.use(KoaCompose([LoginRouter.routes(),LoginRouter.allowedMethods()]))
+
+/// Setting
 app.use(KoaCompose([UserRouter.routes(), UserRouter.allowedMethods()]));
 app.use(KoaCompose([UserGroupRouter.routes(), UserGroupRouter.allowedMethods()]));
 app.use(KoaCompose([ModulRouter.routes(), ModulRouter.allowedMethods()]));
@@ -41,7 +45,11 @@ app.use(KoaCompose([MasterDataRouter.routes(), MasterDataRouter.allowedMethods()
 app.use(KoaCompose([ParameterRouter.routes(), ParameterRouter.allowedMethods()]));
 app.use(KoaCompose([DocumentationRouter.routes(), DocumentationRouter.allowedMethods()]));
 
-app.use(KoaCompose([LoginRouter.routes(),LoginRouter.allowedMethods()]))
+/// CV
+app.use(KoaCompose([CVProfileRouter.routes(), CVProfileRouter.allowedMethods()]));
+
+
+
 
 
 

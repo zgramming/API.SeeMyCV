@@ -8,3 +8,5 @@ export const AVAILABLE_ACCESS_MENU = [
   "print",
   "approve",
 ];
+
+export const ERROR_TYPE_VALIDATION = "VALIDATION_ERROR";

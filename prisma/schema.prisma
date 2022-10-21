@@ -302,7 +302,7 @@ model CVPortfolioUrl {
 
 model CVProfile {
   id          String   @id @default(uuid())
-  users_id    Int
+  users_id    Int      @unique
   name        String   @db.VarChar(100)
   motto       String   @db.Text()
   description String?  @db.LongText()
