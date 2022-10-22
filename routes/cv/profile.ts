@@ -1,8 +1,11 @@
+import Validator from "fastest-validator";
+import koaBody from "koa-body";
 import Router from "koa-router";
 
 import { PrismaClient } from "@prisma/client";
-import Validator from "fastest-validator";
+
 import { ERROR_TYPE_VALIDATION } from "../../utils/constant";
+
 const validator = new Validator();
 
 const prisma = new PrismaClient();
@@ -22,21 +25,11 @@ CVProfileRouter.get("/:users_id", async (ctx, next) => {
   });
 });
 
-CVProfileRouter.post("/", async (ctx, next) => {
+CVProfileRouter.post("/", koaBody({ multipart: true }), async (ctx, next) => {
   try {
-    const {
-      users_id,
-      name,
-      motto,
-      description,
-      phone,
-      email,
-      web,
-      address,
-      image,
-    } = ctx.request.body;
-
-    console.log({ body: ctx.request.body });
+    const files = ctx.request.files;
+    const { users_id, name, motto, description, phone, email, web, address } =
+      ctx.request.body;
 
     const schema = {
       users_id: { type: "number" },
@@ -55,11 +48,7 @@ CVProfileRouter.post("/", async (ctx, next) => {
       });
     }
 
-    const result = await prisma.cVProfile.findFirst({
-      where: { users_id: +users_id },
-    });
-
-    const data = { ...ctx.request.body, users_id: +users_id };
+    const data = { ...ctx.request.body, users_id: +users_id, image: undefined };
 
     const upsert = await prisma.cVProfile.upsert({
       where: { users_id: +users_id },
@@ -67,10 +56,10 @@ CVProfileRouter.post("/", async (ctx, next) => {
       update: data,
     });
 
-    console.log(upsert);
     return (ctx.body = {
       success: true,
-      data: result,
+      message: "Berhasil mengupdate user dengan nama " + name,
+      data: upsert,
     });
   } catch (error: any) {
     console.log({ error: error });
