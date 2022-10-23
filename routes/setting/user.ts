@@ -1,6 +1,5 @@
 import { hashSync } from "bcrypt";
 import Router from "koa-router";
-import validator from "validator";
 
 import { PrismaClient } from "@prisma/client";
 
@@ -61,11 +60,11 @@ UserRouter.post("/", async (ctx, next) => {
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
     if (app_group_user_id == 0) ctx.throw("Group User required", 400);
-    if (validator.isEmpty(name)) ctx.throw("Nama required", 400);
-    if (validator.isEmpty(email)) ctx.throw("Email required", 400);
-    if (validator.isEmpty(username)) ctx.throw("Username required", 400);
-    if (validator.isEmpty(password)) ctx.throw("Password required", 400);
-    if (validator.isEmpty(status)) ctx.throw("Status required", 400);
+    if (name == "") ctx.throw("Nama required", 400);
+    if (email == "") ctx.throw("Email required", 400);
+    if (username == "") ctx.throw("Username required", 400);
+    if (password == "") ctx.throw("Password required", 400);
+    if (status == "") ctx.throw("Status required", 400);
 
     const result = await prisma.users.create({
       data: {
@@ -113,11 +112,11 @@ UserRouter.put("/:id", async (ctx, next) => {
 
     if (id == 0) ctx.throw("ID Required", 400);
     if (app_group_user_id == 0) ctx.throw("Group User required", 400);
-    if (validator.isEmpty(name)) ctx.throw("Nama required", 400);
-    if (validator.isEmpty(email)) ctx.throw("Email required", 400);
-    if (validator.isEmpty(username)) ctx.throw("Username required", 400);
-    if (validator.isEmpty(password)) ctx.throw("Password required", 400);
-    if (validator.isEmpty(status)) ctx.throw("Status required", 400);
+    if (name == "") ctx.throw("Nama required", 400);
+    if (email == "") ctx.throw("Email required", 400);
+    if (username == "") ctx.throw("Username required", 400);
+    if (password == "") ctx.throw("Password required", 400);
+    if (status == "") ctx.throw("Status required", 400);
 
     const result = await prisma.users.update({
       where: {

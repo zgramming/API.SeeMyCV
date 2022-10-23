@@ -1,12 +1,11 @@
 import Koa from "koa";
-import koaBody from "koa-body";
 import KoaBody from "koa-body";
-import BodyParser from "koa-bodyparser";
 import KoaCompose from "koa-compose";
 import Json from "koa-json";
 import Logger from "koa-logger";
-import CVProfileRouter from "./routes/cv/profile";
+import Serve from "koa-static";
 
+import CVProfileRouter from "./routes/cv/profile";
 import AccessMenuRouter from "./routes/setting/access_menu";
 import AccessModulRouter from "./routes/setting/access_modul";
 import DocumentationRouter from "./routes/setting/documentation";
@@ -21,13 +20,16 @@ import UserGroupRouter from "./routes/setting/user_group";
 
 const cors = require("@koa/cors");
 const app = new Koa();
-
-app.use(KoaBody());
+const multer = require("@koa/multer");
+// app.use(multer());
+app.use(KoaBody({ multipart: true }));
 
 app.use(cors());
 app.use(Json());
 app.use(Logger());
-// app.use(BodyParser({}));
+
+/// Make folder file accessible via url
+app.use(Serve(__dirname + "/public"));
 
 app.use(KoaCompose([LoginRouter.routes(), LoginRouter.allowedMethods()]));
 

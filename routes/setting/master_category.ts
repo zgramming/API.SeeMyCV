@@ -1,5 +1,4 @@
 import Router from "koa-router";
-import validator from "validator";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -56,8 +55,8 @@ MasterCategoryRouter.post("/", async (ctx, next) => {
       status?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
-    if (validator.isEmpty(code)) ctx.throw("Code required", 400);
-    if (validator.isEmpty(name)) ctx.throw("Name required", 400);
+    if (code == "") ctx.throw("Code required", 400);
+    if (name == "") ctx.throw("Name required", 400);
 
     const result = await prisma.masterCategory.create({
       data: {
@@ -103,8 +102,8 @@ MasterCategoryRouter.put("/:id", async (ctx, next) => {
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
     if (id == 0) ctx.throw("ID Required", 400);
-    if (validator.isEmpty(code)) ctx.throw("Code required", 400);
-    if (validator.isEmpty(name)) ctx.throw("Name required", 400);
+    if (code == "") ctx.throw("Code required", 400);
+    if (name == "") ctx.throw("Name required", 400);
 
     const result = await prisma.masterCategory.update({
       where: {

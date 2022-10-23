@@ -1,5 +1,4 @@
 import Router from "koa-router";
-import validator from "validator";
 
 import { PrismaClient } from "@prisma/client";
 
@@ -49,9 +48,9 @@ UserGroupRouter.post("/", async function (ctx, next) {
       JSON.stringify(ctx.request.body)
     );
 
-    if (validator.isEmpty(code ?? "")) ctx.throw("Code is required", 400);
-    if (validator.isEmpty(name ?? "")) ctx.throw("Name is required", 400);
-    if (validator.isEmpty(status ?? "")) ctx.throw("Status is required", 400);
+    if (code == "") ctx.throw("Code is required", 400);
+    if (name == "") ctx.throw("Name is required", 400);
+    if (status == "") ctx.throw("Status is required", 400);
 
     const result = await prisma.appGroupUser.create({
       data: {
@@ -86,9 +85,9 @@ UserGroupRouter.put("/:id", async function (ctx, next) {
       JSON.parse(JSON.stringify(ctx.request.body));
 
     if (id == 0) ctx.throw("ID is required", 400);
-    if (validator.isEmpty(code ?? "")) ctx.throw("Code is required", 400);
-    if (validator.isEmpty(name ?? "")) ctx.throw("Name is required", 400);
-    if (validator.isEmpty(status ?? "")) ctx.throw("Status is required", 400);
+    if (code == "") ctx.throw("Code is required", 400);
+    if (name == "") ctx.throw("Name is required", 400);
+    if (status == "") ctx.throw("Status is required", 400);
 
     const result = await prisma.appGroupUser.update({
       where: {

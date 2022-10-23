@@ -1,5 +1,4 @@
 import Router from "koa-router";
-import validator from "validator";
 
 import { PrismaClient } from "@prisma/client";
 
@@ -65,9 +64,9 @@ MenuRouter.post("/", async (ctx, next) => {
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
     if (app_modul_id == 0) ctx.throw("Modul required", 400);
-    if (validator.isEmpty(code)) ctx.throw("Code required", 400);
-    if (validator.isEmpty(name)) ctx.throw("Name required", 400);
-    if (validator.isEmpty(route)) ctx.throw("Route required", 400);
+    if (code == "") ctx.throw("Code required", 400);
+    if (name == "") ctx.throw("Name required", 400);
+    if (route == "") ctx.throw("Route required", 400);
 
     const result = await prisma.appMenu.create({
       data: {
@@ -121,9 +120,9 @@ MenuRouter.put("/:id", async (ctx, next) => {
 
     if (id == 0) ctx.throw("ID required", 400);
     if (app_modul_id == 0) ctx.throw("Modul required", 400);
-    if (validator.isEmpty(code)) ctx.throw("Code required", 400);
-    if (validator.isEmpty(name)) ctx.throw("Name required", 400);
-    if (validator.isEmpty(route)) ctx.throw("Route required", 400);
+    if (code == "") ctx.throw("Code required", 400);
+    if (name == "") ctx.throw("Name required", 400);
+    if (route == "") ctx.throw("Route required", 400);
 
     const result = await prisma.appMenu.update({
       where: { id: +id },

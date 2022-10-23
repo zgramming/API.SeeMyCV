@@ -1,5 +1,4 @@
 import Router from "koa-router";
-import validator from "validator";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -60,10 +59,7 @@ DocumentationRouter.post("/", async (ctx, next) => {
       status?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
-    if (validator.isEmpty(code)) ctx.throw("Code required", 400);
-    if (validator.isEmpty(name)) ctx.throw("Name required", 400);
     if (job_id == 0) ctx.throw("Job required", 400);
-    if (validator.isEmpty(status)) ctx.throw("Status required", 400);
 
     const result = await prisma.documentation.create({
       data: {
@@ -115,10 +111,7 @@ DocumentationRouter.put("/:id", async (ctx, next) => {
       status?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
-    if (validator.isEmpty(code)) ctx.throw("Code required", 400);
-    if (validator.isEmpty(name)) ctx.throw("Name required", 400);
     if (job_id == 0) ctx.throw("Job required", 400);
-    if (validator.isEmpty(status)) ctx.throw("Status required", 400);
 
     const result = await prisma.documentation.update({
       where: { id: +id },

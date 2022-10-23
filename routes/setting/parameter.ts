@@ -1,5 +1,4 @@
 import Router from "koa-router";
-import validator from "validator";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -11,7 +10,7 @@ ParameterRouter.get("/", async (ctx, next) => {
     name = "",
     value = "",
     status,
-    limit,    
+    limit,
     offset,
   }: {
     code?: string;
@@ -50,10 +49,10 @@ ParameterRouter.post("/", async (ctx, next) => {
       status?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
-    if (validator.isEmpty(code)) ctx.throw("Code required", 400);
-    if (validator.isEmpty(name)) ctx.throw("Name required", 400);
-    if (validator.isEmpty(value)) ctx.throw("Value required", 400);
-    if (validator.isEmpty(status)) ctx.throw("Status required", 400);
+    if (code == "") ctx.throw("Code required", 400);
+    if (name == "") ctx.throw("Name required", 400);
+    if (value == "") ctx.throw("Value required", 400);
+    if (status == "") ctx.throw("Status required", 400);
 
     const result = await prisma.parameter.create({
       data: {
@@ -93,10 +92,10 @@ ParameterRouter.put("/", async (ctx, next) => {
       status?: string;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
-    if (validator.isEmpty(code)) ctx.throw("Code required", 400);
-    if (validator.isEmpty(name)) ctx.throw("Name required", 400);
-    if (validator.isEmpty(value)) ctx.throw("Value required", 400);
-    if (validator.isEmpty(status)) ctx.throw("Status required", 400);
+    if (code == "") ctx.throw("Code required", 400);
+    if (name == "") ctx.throw("Name required", 400);
+    if (value == "") ctx.throw("Value required", 400);
+    if (status == "") ctx.throw("Status required", 400);
 
     const result = await prisma.parameter.update({
       where: { id: +id },
