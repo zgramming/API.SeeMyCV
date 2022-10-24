@@ -46,9 +46,9 @@ const MenuSeeder = async () => {
     },
     {
       app_modul_id: modulCV?.id ?? 0,
-      code: "CV_LICENSE_AND_CERTIFICATE",
+      code: "CV_LICENSE_CERTIFICATE",
       name: "License & Certificate",
-      route: "/cv/license_and_certificate",
+      route: "/cv/license_certificate",
       order: 5,
     },
     {

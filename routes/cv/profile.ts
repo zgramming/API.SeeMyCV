@@ -1,13 +1,13 @@
-import Validator from 'fastest-validator';
-import { mkdirSync, renameSync } from 'fs';
-import Router from 'koa-router';
-import { cwd } from 'process';
-import { v4 as uuidV4 } from 'uuid';
+import Validator from "fastest-validator";
+import { mkdirSync, renameSync } from "fs";
+import Router from "koa-router";
+import { cwd } from "process";
+import { v4 as uuidV4 } from "uuid";
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
-import { ERROR_TYPE_VALIDATION } from '../../utils/constant';
-import { mbTObytes } from '../../utils/function';
+import { ERROR_TYPE_VALIDATION } from "../../utils/constant";
+import { mbTObytes } from "../../utils/function";
 
 const validator = new Validator();
 const prisma = new PrismaClient();
@@ -38,12 +38,11 @@ CVProfileRouter.post("/", async (ctx, next) => {
   try {
     const createDir = mkdirSync(dirUpload, { recursive: true });
 
-    const files = ctx.request.files;
     const { users_id, name, motto, description, phone, email, web, address } =
       ctx.request.body;
+    const files = ctx.request.files;
 
-    console.log({ files: files });
-
+    console.log({ files: files, body: ctx.request.body, header: ctx.headers });
     const profile = await prisma.cVProfile.findFirst({
       where: { users_id: +(users_id ?? "0") },
       include: {
@@ -81,11 +80,11 @@ CVProfileRouter.post("/", async (ctx, next) => {
     }
 
     if (files?.image) {
-      const image = files.image as any;
+      const image = files!.image as any;
       const size = image.size as number;
       if (size > mbTObytes(2)) ctx.throw(400, "Ukuran file maximal 2Mb");
 
-      const ext = (image.filepath as string).split(".").pop();
+      const ext = (image.originalFilename as string).split(".").pop();
       const filename = profile?.image ?? uuidV4() + "." + ext;
 
       /// Upload image

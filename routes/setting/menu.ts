@@ -11,8 +11,8 @@ MenuRouter.get("/", async (ctx, next) => {
     name = "",
     code = "",
     status = "",
-    limit = 10,
-    offset = 0,
+    limit,
+    offset,
   }: {
     app_modul_id?: number;
     name?: string;
@@ -29,14 +29,20 @@ MenuRouter.get("/", async (ctx, next) => {
       ...(code && { code: { contains: code } }),
       ...(status && { status: { contains: status } }),
     },
-    ...(limit != 0 && { take: +limit }),
-    ...(offset != 0 && { skip: +offset }),
+    ...(limit && limit != 0 && { take: +limit }),
+    ...(offset && offset != 0 && { skip: +offset }),
     include: {
       menu_parent: true,
       app_modul: true,
       access_menu: true,
       menu_childrens: true,
     },
+    orderBy: [
+      {
+        app_modul_id: "asc",
+      },
+      { order: "asc" },
+    ],
   });
   return (ctx.body = { success: true, data: result });
 });

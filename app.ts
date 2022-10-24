@@ -4,6 +4,7 @@ import KoaCompose from "koa-compose";
 import Json from "koa-json";
 import Logger from "koa-logger";
 import Serve from "koa-static";
+import CVExperienceRouter from "./routes/cv/experience";
 
 import CVProfileRouter from "./routes/cv/profile";
 import AccessMenuRouter from "./routes/setting/access_menu";
@@ -68,6 +69,9 @@ app.use(
 /// CV
 app.use(
   KoaCompose([CVProfileRouter.routes(), CVProfileRouter.allowedMethods()])
+);
+app.use(
+  KoaCompose([CVExperienceRouter.routes(), CVExperienceRouter.allowedMethods()])
 );
 
 app.listen(process.env.PORT, () => {
