@@ -8,7 +8,6 @@ import { PrismaClient } from "@prisma/client";
 
 import { ERROR_TYPE_VALIDATION } from "../../utils/constant";
 import { mbTObytes } from "../../utils/function";
-import { Console } from "console";
 
 const prisma = new PrismaClient();
 const validator = new Validator();

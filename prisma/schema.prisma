@@ -228,14 +228,15 @@ model Users {
 //! Aplikasi
 
 model CVEducation {
-  id           String    @id @default(uuid())
-  users_id     Int
-  name         String    @db.VarChar(100) // SMK Negeri 1 Kota Bekasi
-  major        String    @db.VarChar(100) // System Information 
-  unit         String    @db.VarChar(100) // Vocational High School, Associate Degree
-  start_date   DateTime
-  end_date     DateTime?
-  is_graduated Boolean   @default(false)
+  id             String    @id @default(uuid())
+  users_id       Int
+  name           String    @db.VarChar(100) // SMK Negeri 1 Kota Bekasi
+  major          String    @db.VarChar(100) // System Information 
+  field_of_study String    @db.VarChar(100) // Vocational High School, Associate Degree
+  start_date     DateTime
+  end_date       DateTime?
+  is_graduated   Boolean   @default(false)
+  image          String?
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
