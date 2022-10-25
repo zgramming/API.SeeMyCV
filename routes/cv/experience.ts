@@ -14,19 +14,31 @@ const prisma = new PrismaClient();
 const validator = new Validator();
 
 const CVExperienceRouter = new Router({ prefix: "/api/cv/experience" });
-const directory = "/public/images/cv/experience";
+
+const baseUrlImage = "images/cv/experience";
+const directory = "/public/" + baseUrlImage;
 const dirUpload = cwd() + directory;
 
 CVExperienceRouter.get("/:users_id", async (ctx, next) => {
   const { users_id } = ctx.params;
 
-  const result = await prisma.cVExperience.findMany({
+  const res = await prisma.cVExperience.findMany({
     include: { user: true },
     where: { users_id: +users_id },
   });
 
+  if (res.length == 0) ctx.throw(404, new Error("Pengalaman tidak ditemukan"));
+
+  res.map((val) => {
+    if (val.image_company) {
+      const imageUrl = `${ctx.origin}/${baseUrlImage}/${val.image_company}`;
+      return { ...val, image_company: imageUrl };
+    }
+    return val;
+  });
+
   return (ctx.body = {
-    data: result,
+    data: res,
     success: true,
   });
 });
@@ -65,8 +77,6 @@ CVExperienceRouter.post("/", async (ctx, next) => {
     console.log({
       body: data,
       file: ctx.request.files,
-      exp: exp,
-      headers: ctx.request.headers,
     });
     // ctx.throw(500, new Error("error"));
 
@@ -103,8 +113,7 @@ CVExperienceRouter.post("/", async (ctx, next) => {
       const filename = exp?.image_company ?? uuidV4() + "." + ext;
 
       /// Upload image
-      renameSync(image.filepath, dirUpload + `/${filename}`);
-
+      renameSync(image.filepath, `${dirUpload}/${filename}`);
       /// Adding object into request body
       data.image_company = filename;
     }
