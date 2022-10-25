@@ -13,8 +13,8 @@ MasterDataRouter.get("/", async (ctx, next) => {
     code,
     name,
     status,
-    limit = 10,
-    offset = 0,
+    limit,
+    offset,
   }: {
     master_category_id?: number;
     master_category_code?: string;
