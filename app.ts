@@ -6,6 +6,8 @@ import Logger from "koa-logger";
 import Serve from "koa-static";
 import CVEducationRouter from "./routes/cv/education";
 import CVExperienceRouter from "./routes/cv/experience";
+import CVLicenseCertificateRouter from "./routes/cv/license_certificate";
+import CVPortfolioRouter from "./routes/cv/portfolio";
 
 import CVProfileRouter from "./routes/cv/profile";
 import CVSkillRouter from "./routes/cv/skill";
@@ -79,6 +81,15 @@ app.use(
   KoaCompose([CVEducationRouter.routes(), CVEducationRouter.allowedMethods()])
 );
 app.use(KoaCompose([CVSkillRouter.routes(), CVSkillRouter.allowedMethods()]));
+app.use(
+  KoaCompose([
+    CVLicenseCertificateRouter.routes(),
+    CVLicenseCertificateRouter.allowedMethods(),
+  ])
+);
+app.use(
+  KoaCompose([CVPortfolioRouter.routes(), CVPortfolioRouter.allowedMethods()])
+);
 
 app.listen(process.env.PORT, () => {
   console.log("Koa server is started on " + process.env.PORT);

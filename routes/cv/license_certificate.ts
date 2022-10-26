@@ -12,24 +12,24 @@ import { validationFile } from "../../utils/function";
 
 const validator = new Validator();
 const prisma = new PrismaClient();
-const CVEducationRouter = new Router({ prefix: "/api/cv/education" });
+const CVLicenseCertificateRouter = new Router({
+  prefix: "/api/cv/license_certificate",
+});
 
-const dirUpload = cwd() + "/public/images/cv/education";
-const baseUrlImage = "images/cv/education";
+const dirUpload = cwd() + "/public/images/cv/license_certificate";
+const baseUrlFile = "images/cv/license_certificate";
 
-CVEducationRouter.get("/:users_id", async (ctx, next) => {
+CVLicenseCertificateRouter.get("/:users_id", async (ctx, next) => {
   const { users_id } = ctx.params;
 
-  const res = await prisma.cVEducation.findMany({
+  let res = await prisma.cVLicenseCertificate.findMany({
     include: { user: true },
     where: { users_id: +users_id },
   });
 
-  if (res.length == 0) ctx.throw(404, new Error("Pendidikan tidak ditemukan"));
-
-  res.map((val) => {
-    const image = `${ctx.origin}/${baseUrlImage}/${val.image}`;
-    return { ...val, image };
+  res = res.map((val) => {
+    const file = `${ctx.origin}/${baseUrlFile}/${val.file}`;
+    return { ...val, file };
   });
 
   return (ctx.body = {
@@ -38,7 +38,7 @@ CVEducationRouter.get("/:users_id", async (ctx, next) => {
   });
 });
 
-CVEducationRouter.post("/", async (ctx, next) => {
+CVLicenseCertificateRouter.post("/", async (ctx, next) => {
   try {
     const createDir = mkdirSync(dirUpload, { recursive: true });
 
@@ -46,28 +46,36 @@ CVEducationRouter.post("/", async (ctx, next) => {
       id,
       users_id,
       name,
-      major,
-      field_of_study,
+      publisher,
       start_date,
       end_date,
-      is_graduated,
+      is_expired,
+      url,
+      credential,
     } = ctx.request.body;
     const files = ctx.request.files;
-    const education = await prisma.cVEducation.findFirst({ where: { id } });
+
+    const licenseCertificate = !id
+      ? null
+      : await prisma.cVLicenseCertificate.findFirst({
+          where: { id: id },
+        });
+
     const data = {
-      id: education?.id,
+      id: licenseCertificate?.id,
       users_id: +users_id,
       name,
-      major,
-      field_of_study,
+      publisher,
+      url,
+      credential,
       start_date: new Date(start_date),
       end_date: new Date(end_date),
-      is_graduated: +is_graduated ? true : false,
-      image: education?.image,
+      is_expired: +is_expired ? true : false,
+      file: licenseCertificate?.file,
     };
 
     console.log({
-      body: data,
+      body: ctx.request.body,
       file: ctx.request.files,
     });
 
@@ -75,8 +83,7 @@ CVEducationRouter.post("/", async (ctx, next) => {
       id: { type: "string", optional: true },
       users_id: { type: "number" },
       name: { type: "string" },
-      major: { type: "string" },
-      field_of_study: { type: "string" },
+      publisher: { type: "string" },
       start_date: { type: "date" },
       ...(end_date && { end_date: "date" }),
     };
@@ -92,12 +99,12 @@ CVEducationRouter.post("/", async (ctx, next) => {
       });
     }
 
-    if (files?.image) {
-      const file = files!.image as any;
+    if (files?.file) {
+      const file = files!.file as any;
       const { size, mimetype, originalFilename, filepath } = file;
       const validateFile = validationFile({
         file: file,
-        allowedMimetype: ["png", "jpeg", "jpg"],
+        allowedMimetype: ["png", "pdf"],
         limitSizeMB: 1,
         onError(message) {
           ctx.status = 400;
@@ -111,52 +118,54 @@ CVEducationRouter.post("/", async (ctx, next) => {
         ext: extOri,
       } = parse(originalFilename);
 
-      const filename = education?.image ? education.image : uuidV4() + extOri;
+      const filename = licenseCertificate?.file
+        ? licenseCertificate.file
+        : uuidV4() + extOri;
 
       const {
-        base: baseEducationFile,
-        name: nameEducationFile,
-        ext: extEducationFile,
+        base: baseLicenseFile,
+        name: nameLicenseFile,
+        ext: extLicenseFile,
       } = parse(filename);
 
-      const fullname = nameEducationFile + extOri;
+      const fullname = nameLicenseFile + extOri;
 
       /// Upload image
       renameSync(file.filepath, `${dirUpload}/${fullname}`);
 
       /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
       /// Maka file yang lama akan dihapus
-      if (extOri !== extEducationFile && education?.image) {
-        unlinkSync(dirUpload + "/" + education.image);
+      if (extOri !== extLicenseFile && licenseCertificate?.file) {
+        unlinkSync(dirUpload + "/" + licenseCertificate.file);
       }
 
       /// Adding object into request body
-      data.image = fullname;
+      data.file = fullname;
     }
 
-    if (!education) {
+    if (!licenseCertificate) {
       /// insert
-      const create = await prisma.cVEducation.create({
+      const create = await prisma.cVLicenseCertificate.create({
         include: { user: true },
         data: data,
       });
       ctx.body = 200;
       return (ctx.body = {
         success: true,
-        message: "Berhasil menambah pendidikan baru",
+        message: "Berhasil menambah Lisensi / Sertifikat baru",
         data: create,
       });
     } else {
       /// update
-      const update = await prisma.cVEducation.update({
+      const update = await prisma.cVLicenseCertificate.update({
         include: { user: true },
         data: data,
-        where: { id: education.id },
+        where: { id: licenseCertificate.id },
       });
       ctx.body = 200;
       return (ctx.body = {
         success: true,
-        message: "Berhasil mengupdate pendidikan baru",
+        message: "Berhasil mengupdate Lisensi / Sertifikat baru",
         data: update,
       });
     }
@@ -170,24 +179,29 @@ CVEducationRouter.post("/", async (ctx, next) => {
   }
 });
 
-CVEducationRouter.del("/:id", async (ctx, next) => {
+CVLicenseCertificateRouter.del("/:id", async (ctx, next) => {
   try {
     const { id } = ctx.params;
-    const exp = await prisma.cVEducation.findFirst({ where: { id } });
-    if (!exp) {
+    const licenseCertificate = await prisma.cVLicenseCertificate.findFirst({
+      where: { id },
+    });
+    if (!licenseCertificate) {
       return ctx.throw(
         404,
-        new Error("Pendidikan tidak ditemukan dengan id " + id)
+        new Error("Lisensi / Sertifikat tidak ditemukan dengan id " + id)
       );
     }
 
-    const del = await prisma.cVEducation.delete({ where: { id: exp?.id } });
-    const pathImage = dirUpload + `/${del.image}`;
-    if (existsSync(pathImage)) unlinkSync(pathImage);
+    const del = await prisma.cVLicenseCertificate.delete({
+      where: { id: licenseCertificate?.id },
+    });
+
+    const pathFile = dirUpload + `/${del.file}`;
+    if (existsSync(pathFile)) unlinkSync(pathFile);
 
     ctx.status = 200;
     return (ctx.body = {
-      message: `Pendidikan dengan id ${del.id} berhasil dihapus`,
+      message: `Lisensi / Sertifikat dengan id ${del.id} berhasil dihapus`,
       data: del,
     });
   } catch (error: any) {
@@ -200,4 +214,4 @@ CVEducationRouter.del("/:id", async (ctx, next) => {
   }
 });
 
-export default CVEducationRouter;
+export default CVLicenseCertificateRouter;

@@ -1,13 +1,14 @@
 import Validator from "fastest-validator";
 import { existsSync, mkdirSync, renameSync, unlinkSync } from "fs";
 import Router from "koa-router";
+import { parse } from "path";
 import { cwd } from "process";
 import { v4 as uuidV4 } from "uuid";
 
 import { PrismaClient } from "@prisma/client";
 
 import { ERROR_TYPE_VALIDATION } from "../../utils/constant";
-import { mbTObytes } from "../../utils/function";
+import { validationFile } from "../../utils/function";
 
 const prisma = new PrismaClient();
 const validator = new Validator();
@@ -21,14 +22,14 @@ const dirUpload = cwd() + directory;
 CVExperienceRouter.get("/:users_id", async (ctx, next) => {
   const { users_id } = ctx.params;
 
-  const res = await prisma.cVExperience.findMany({
+  let res = await prisma.cVExperience.findMany({
     include: { user: true },
     where: { users_id: +users_id },
   });
 
   if (res.length == 0) ctx.throw(404, new Error("Pengalaman tidak ditemukan"));
 
-  res.map((val) => {
+  res = res.map((val) => {
     if (val.image_company) {
       const imageUrl = `${ctx.origin}/${baseUrlImage}/${val.image_company}`;
       return { ...val, image_company: imageUrl };
@@ -103,18 +104,48 @@ CVExperienceRouter.post("/", async (ctx, next) => {
       });
     }
 
-    if (files?.image_company) {
-      const image = files!.image_company as any;
-      const size = image.size as number;
-      if (size > mbTObytes(2)) ctx.throw(400, "Ukuran file maximal 2Mb");
+    if (files?.image) {
+      const file = files!.image_company as any;
+      const { size, mimetype, originalFilename, filepath } = file;
+      const validateFile = validationFile({
+        file: file,
+        allowedMimetype: ["png", "jpeg", "jpg"],
+        limitSizeMB: 1,
+        onError(message) {
+          ctx.status = 400;
+          throw new Error(message);
+        },
+      });
 
-      const ext = (image.originalFilename as string).split(".").pop();
-      const filename = exp?.image_company ?? uuidV4() + "." + ext;
+      const {
+        base: baseOri,
+        name: nameOri,
+        ext: extOri,
+      } = parse(originalFilename);
+
+      const filename = exp?.image_company
+        ? exp.image_company
+        : uuidV4() + extOri;
+
+      const {
+        base: baseExpFile,
+        name: nameExpFile,
+        ext: extExpFile,
+      } = parse(filename);
+
+      const fullname = nameExpFile + extOri;
 
       /// Upload image
-      renameSync(image.filepath, `${dirUpload}/${filename}`);
+      renameSync(file.filepath, `${dirUpload}/${fullname}`);
+
+      /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
+      /// Maka file yang lama akan dihapus
+      if (extOri !== extExpFile && exp?.image_company) {
+        unlinkSync(dirUpload + "/" + exp.image_company);
+      }
+
       /// Adding object into request body
-      data.image_company = filename;
+      data.image_company = fullname;
     }
 
     if (!exp) {

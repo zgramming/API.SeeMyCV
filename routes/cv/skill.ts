@@ -24,64 +24,74 @@ CVSkillRouter.get("/:users_id", async (ctx, next) => {
 });
 
 CVSkillRouter.post("/", async (ctx, next) => {
-  const { id, users_id, name, level_id } = ctx.request.body;
-  const skill = id && (await prisma.cVSkill.findFirst({ where: { id: id } }));
-  const data = {
-    id: skill?.id,
-    users_id: +users_id,
-    name,
-    level_id: +level_id,
-  };
+  try {
+    const { id, users_id, name, level_id } = ctx.request.body;
+    const skill = !id
+      ? null
+      : await prisma.cVSkill.findFirst({ where: { id: id } });
+    const data = {
+      id: skill?.id,
+      users_id: +users_id,
+      name,
+      level_id: +level_id,
+    };
 
-  console.log({
-    id: skill,
-    body: skill,
-    file: ctx.request.files,
-  });
+    console.log({
+      body: skill,
+      file: ctx.request.files,
+    });
 
-  const schema = {
-    id: { type: "string", optional: true },
-    users_id: { type: "number" },
-    name: { type: "string" },
-    level_id: { type: "number" },
-  };
-  const createSchema = validator.compile(schema);
-  const checkSchema = await createSchema(data);
+    const schema = {
+      id: { type: "string", optional: true },
+      users_id: { type: "number" },
+      name: { type: "string" },
+      level_id: { type: "number" },
+    };
+    const createSchema = validator.compile(schema);
+    const checkSchema = await createSchema(data);
 
-  if (checkSchema !== true) {
-    ctx.status = 400;
-    return (ctx.body = {
+    if (checkSchema !== true) {
+      ctx.status = 400;
+      return (ctx.body = {
+        success: false,
+        type: ERROR_TYPE_VALIDATION,
+        message: checkSchema,
+      });
+    }
+
+    if (!skill) {
+      /// insert
+      const create = await prisma.cVSkill.create({
+        include: { user: true, level: true },
+        data: data,
+      });
+      ctx.body = 200;
+      return (ctx.body = {
+        success: true,
+        message: "Berhasil menambah skill baru",
+        data: create,
+      });
+    } else {
+      /// update
+      const update = await prisma.cVSkill.update({
+        include: { user: true, level: true },
+        data: data,
+        where: { id: skill.id },
+      });
+      ctx.body = 200;
+      return (ctx.body = {
+        success: true,
+        message: "Berhasil mengupdate skill " + skill.name,
+        data: update,
+      });
+    }
+  } catch (error: any) {
+    console.log({ error: error });
+    ctx.status = error.statusCode || error.status || 500;
+    ctx.body = {
       success: false,
-      type: ERROR_TYPE_VALIDATION,
-      message: checkSchema,
-    });
-  }
-
-  if (!skill) {
-    /// insert
-    const create = await prisma.cVSkill.create({
-      include: { user: true, level: true },
-      data: data,
-    });
-    ctx.body = 200;
-    return (ctx.body = {
-      success: true,
-      message: "Berhasil menambah skill baru",
-      data: create,
-    });
-  } else {
-    /// update
-    const update = await prisma.cVSkill.update({
-      include: { user: true, level: true },
-      data: data,
-      where: { id: skill.id },
-    });
-    ctx.body = 200;
-    return (ctx.body = {
-      success: true,
-      message: "Berhasil mengupdate skill " + skill.name,
-      data: update,
-    });
+      message: error.message,
+    };
   }
 });
 

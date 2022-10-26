@@ -279,6 +279,7 @@ model CVLicenseCertificate {
   end_date   DateTime?
   is_expired Boolean   @default(false)
   url        String?   @db.Text()
+  file       String?   @db.Text()
   credential String?   @db.Text()
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
@@ -291,19 +292,19 @@ model CVLicenseCertificate {
 }
 
 model CVPortfolio {
-  id             String           @id @default(uuid())
-  users_id       Int
-  title          String           @db.VarChar(100)
-  slug           String           @db.VarChar(100)
-  description    String           @db.LongText()
-  image          String?          @db.Text()
-  tags           Json?
-  created_at     DateTime         @default(now())
-  updated_at     DateTime         @updatedAt
-  created_by     Int?
-  updated_by     Int?
-  user           Users            @relation(fields: [users_id], references: [id], onDelete: Cascade)
-  CVPortfolioUrl CVPortfolioUrl[]
+  id          String           @id @default(uuid())
+  users_id    Int
+  title       String           @db.VarChar(100)
+  slug        String           @db.VarChar(100)
+  description String           @db.LongText()
+  thumbnail   String?          @db.Text()
+  tags        Json?
+  created_at  DateTime         @default(now())
+  updated_at  DateTime         @updatedAt
+  created_by  Int?
+  updated_by  Int?
+  user        Users            @relation(fields: [users_id], references: [id], onDelete: Cascade)
+  urls        CVPortfolioUrl[]
 
   @@map("cv_portfolio")
 }
