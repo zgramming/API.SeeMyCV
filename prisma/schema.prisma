@@ -215,12 +215,13 @@ model Users {
   created_by Int?
   updated_by Int?
 
-  app_group_user AppGroupUser   @relation(fields: [app_group_user_id], references: [id], onDelete: Cascade)
-  CVProfile      CVProfile[]
-  CVEducation    CVEducation[]
-  CVExperience   CVExperience[]
-  CVSkill        CVSkill[]
-  CVPortfolio    CVPortfolio[]
+  app_group_user       AppGroupUser           @relation(fields: [app_group_user_id], references: [id], onDelete: Cascade)
+  CVProfile            CVProfile[]
+  CVEducation          CVEducation[]
+  CVExperience         CVExperience[]
+  CVSkill              CVSkill[]
+  CVPortfolio          CVPortfolio[]
+  CVLicenseCertificate CVLicenseCertificate[]
 
   @@map("users")
 }
@@ -267,6 +268,26 @@ model CVExperience {
   user Users @relation(fields: [users_id], references: [id], onDelete: Cascade)
 
   @@map("cv_experience")
+}
+
+model CVLicenseCertificate {
+  id         String    @id @default(uuid())
+  users_id   Int
+  name       String    @db.VarChar(100)
+  publisher  String    @db.VarChar(100)
+  start_date DateTime
+  end_date   DateTime?
+  is_expired Boolean   @default(false)
+  url        String?   @db.Text()
+  credential String?   @db.Text()
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  created_by Int?
+  updated_by Int?
+
+  user Users @relation(fields: [users_id], references: [id], onDelete: Cascade)
+
+  @@map("cv_license_certificate")
 }
 
 model CVPortfolio {

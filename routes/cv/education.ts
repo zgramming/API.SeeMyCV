@@ -1,11 +1,13 @@
-import { PrismaClient } from "@prisma/client";
 import Validator from "fastest-validator";
 import { existsSync, mkdirSync, renameSync, unlinkSync } from "fs";
 import Router from "koa-router";
 import { cwd } from "process";
+import { v4 as uuidV4 } from "uuid";
+
+import { PrismaClient } from "@prisma/client";
+
 import { ERROR_TYPE_VALIDATION } from "../../utils/constant";
 import { mbTObytes } from "../../utils/function";
-import { v4 as uuidV4 } from "uuid";
 
 const validator = new Validator();
 const prisma = new PrismaClient();
