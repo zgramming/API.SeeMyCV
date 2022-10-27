@@ -12,7 +12,7 @@ const prisma = new PrismaClient();
 const main = async () => {
   try {
     /// Disabled foreign key check
-    await prisma.$queryRaw`SET FOREIGN_KEY_CHECKS=0`;
+    await prisma.$queryRaw`SET FOREIGN_KEY_CHECKS=0;`;
 
     await UserGroupSeeder();
     await UsersSeeder();
@@ -24,7 +24,7 @@ const main = async () => {
     await MasterDataSeeder();
 
     /// Enabled Foreign key check
-    await prisma.$queryRaw`SET FOREIGN_KEY_CHECKS=1`;
+    await prisma.$queryRaw`SET FOREIGN_KEY_CHECKS=1;`;
   } catch (error) {
     console.log({
       errorSeeder: error,

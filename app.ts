@@ -8,6 +8,7 @@ import CVEducationRouter from "./routes/cv/education";
 import CVExperienceRouter from "./routes/cv/experience";
 import CVLicenseCertificateRouter from "./routes/cv/license_certificate";
 import CVPortfolioRouter from "./routes/cv/portfolio";
+import CVPreviewRouter from "./routes/cv/preview";
 
 import CVProfileRouter from "./routes/cv/profile";
 import CVSkillRouter from "./routes/cv/skill";
@@ -89,6 +90,9 @@ app.use(
 );
 app.use(
   KoaCompose([CVPortfolioRouter.routes(), CVPortfolioRouter.allowedMethods()])
+);
+app.use(
+  KoaCompose([CVPreviewRouter.routes(), CVPreviewRouter.allowedMethods()])
 );
 
 app.listen(process.env.PORT, () => {

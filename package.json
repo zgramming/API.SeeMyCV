@@ -2,6 +2,7 @@
     "scripts": {
       "watch": "npx nodemon app.ts",
       "prisma:build":"npm run prisma:migrate && npm run prisma:generate && npm run prisma:format",
+      "prisma:build-seeder":"npm run prisma:migrate && npm run prisma:seeder && npm run prisma:generate && npm run prisma:format",
       "prisma:migrate": "npx prisma migrate dev --name init",
       "prisma:generate": "npx prisma generate",
       "prisma:format": "npx prisma format",

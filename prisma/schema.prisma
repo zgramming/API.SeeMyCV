@@ -12,6 +12,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TypeCVPreview {
+  pdf
+  website
+}
+
 model AppGroupUser {
   id     Int    @id @default(autoincrement())
   code   String @unique @db.VarChar(50)
@@ -179,8 +184,9 @@ model MasterData {
   master_category      MasterCategory  @relation(fields: [master_category_id], references: [id], onDelete: Cascade)
   master_data_parent   MasterData?     @relation(name: "master_data", fields: [master_data_id], references: [id], onDelete: Cascade)
   master_data_children MasterData[]    @relation(name: "master_data")
-  jobsDocumentation    Documentation[]
-  CVSkill              CVSkill[]
+  jobs_documentation   Documentation[]
+  cv_skill             CVSkill[]
+  cv_preview           CVPreview[]
 
   @@map("master_data")
 }
@@ -222,6 +228,7 @@ model Users {
   CVSkill              CVSkill[]
   CVPortfolio          CVPortfolio[]
   CVLicenseCertificate CVLicenseCertificate[]
+  CVPreview            CVPreview[]
 
   @@map("users")
 }
@@ -323,6 +330,22 @@ model CVPortfolioUrl {
   portfolio CVPortfolio @relation(fields: [cvportfolio_id], references: [id], onDelete: Cascade)
 
   @@map("cv_portfolio_url")
+}
+
+model CVPreview {
+  id               String        @id @default(uuid())
+  users_id         Int
+  code_template_id Int
+  type             TypeCVPreview
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
+  created_by       Int?
+  updated_by       Int?
+
+  user            Users      @relation(fields: [users_id], references: [id], onDelete: Cascade)
+  master_template MasterData @relation(fields: [code_template_id], references: [id], onDelete: Cascade)
+
+  @@map("cv_preview")
 }
 
 model CVProfile {

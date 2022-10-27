@@ -27,8 +27,6 @@ CVExperienceRouter.get("/:users_id", async (ctx, next) => {
     where: { users_id: +users_id },
   });
 
-  if (res.length == 0) ctx.throw(404, new Error("Pengalaman tidak ditemukan"));
-
   res = res.map((val) => {
     if (val.image_company) {
       const imageUrl = `${ctx.origin}/${baseUrlImage}/${val.image_company}`;
@@ -103,8 +101,7 @@ CVExperienceRouter.post("/", async (ctx, next) => {
         message: checkSchema,
       });
     }
-
-    if (files?.image) {
+    if (files?.image_company) {
       const file = files!.image_company as any;
       const { size, mimetype, originalFilename, filepath } = file;
       const validateFile = validationFile({

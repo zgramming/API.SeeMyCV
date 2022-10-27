@@ -7,8 +7,11 @@ const MasterDataSeeder = async () => {
   const levelSkillCategory = await prisma.masterCategory.findFirst({
     where: { code: "LEVEL_SKILL" },
   });
+  const kodeTempalteWeb = await prisma.masterCategory.findFirst({
+    where: { code: "KODE_TEMPLATE_WEB" },
+  });
 
-  const data = [
+  const dataLevel = [
     {
       master_category_id: levelSkillCategory!.id,
       master_category_code: levelSkillCategory!.code,
@@ -46,7 +49,45 @@ const MasterDataSeeder = async () => {
       parameter1_value: "#D45079",
     },
   ];
-  await prisma.masterData.createMany({ data: data });
+
+  const dataKodeTempalteWebsite = [
+    // Kageki Shoujo
+    {
+      master_category_id: kodeTempalteWeb!.id,
+      master_category_code: kodeTempalteWeb!.code,
+      code: "KODE_TEMPLATE_WEB_WATANASA",
+      name: "Watanasa",
+      description: "Watanabe Sarasa",
+      order: 1,
+    },
+    {
+      master_category_id: kodeTempalteWeb!.id,
+      master_category_code: kodeTempalteWeb!.code,
+      code: "KODE_TEMPLATE_WEB_NARAAI",
+      name: "Naraai",
+      description: "Narata Ai",
+      order: 2,
+    },
+    {
+      master_category_id: kodeTempalteWeb!.id,
+      master_category_code: kodeTempalteWeb!.code,
+      code: "KODE_TEMPLATE_WEB_HOSHIRU",
+      name: "Hoshiru",
+      description: "Hoshino Kaoru",
+      order: 3,
+    },
+    {
+      master_category_id: kodeTempalteWeb!.id,
+      master_category_code: kodeTempalteWeb!.code,
+      code: "KODE_TEMPLATE_WEB_YAMAKO",
+      name: "Yamako",
+      description: "Yamada Ayako",
+      order: 4,
+    },
+  ];
+  await prisma.masterData.createMany({
+    data: [...dataLevel, ...dataKodeTempalteWebsite],
+  });
 };
 
 export default MasterDataSeeder;

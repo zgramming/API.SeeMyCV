@@ -20,14 +20,14 @@ const baseUrlImage = "images/cv/education";
 CVEducationRouter.get("/:users_id", async (ctx, next) => {
   const { users_id } = ctx.params;
 
-  const res = await prisma.cVEducation.findMany({
+  let res = await prisma.cVEducation.findMany({
     include: { user: true },
     where: { users_id: +users_id },
   });
 
   if (res.length == 0) ctx.throw(404, new Error("Pendidikan tidak ditemukan"));
 
-  res.map((val) => {
+  res = res.map((val) => {
     const image = `${ctx.origin}/${baseUrlImage}/${val.image}`;
     return { ...val, image };
   });
