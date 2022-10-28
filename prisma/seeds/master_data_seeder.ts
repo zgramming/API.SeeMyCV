@@ -52,6 +52,7 @@ const MasterDataSeeder = async () => {
 
   const dataKodeTempalteWebsite = [
     // Kageki Shoujo
+    /// Reference : https://lmpixels.com/demo/vido/vido_vcard_template_yellow/index.html
     {
       master_category_id: kodeTempalteWeb!.id,
       master_category_code: kodeTempalteWeb!.code,
@@ -85,6 +86,7 @@ const MasterDataSeeder = async () => {
       order: 4,
     },
   ];
+
   await prisma.masterData.createMany({
     data: [...dataLevel, ...dataKodeTempalteWebsite],
   });
