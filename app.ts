@@ -4,12 +4,13 @@ import KoaCompose from "koa-compose";
 import Json from "koa-json";
 import Logger from "koa-logger";
 import Serve from "koa-static";
+
+import CVContactRouter from "./routes/cv/contact";
 import CVEducationRouter from "./routes/cv/education";
 import CVExperienceRouter from "./routes/cv/experience";
 import CVLicenseCertificateRouter from "./routes/cv/license_certificate";
 import CVPortfolioRouter from "./routes/cv/portfolio";
 import CVPreviewRouter from "./routes/cv/preview";
-
 import CVProfileRouter from "./routes/cv/profile";
 import CVSkillRouter from "./routes/cv/skill";
 import AccessMenuRouter from "./routes/setting/access_menu";
@@ -93,6 +94,9 @@ app.use(
 );
 app.use(
   KoaCompose([CVPreviewRouter.routes(), CVPreviewRouter.allowedMethods()])
+);
+app.use(
+  KoaCompose([CVContactRouter.routes(), CVContactRouter.allowedMethods()])
 );
 
 app.listen(process.env.PORT, () => {

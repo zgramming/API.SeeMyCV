@@ -60,10 +60,17 @@ const MenuSeeder = async () => {
     },
     {
       app_modul_id: modulCV?.id ?? 0,
+      code: "CV_CONTACT",
+      name: "Kontak",
+      route: "/cv/contact",
+      order: 7,
+    },
+    {
+      app_modul_id: modulCV?.id ?? 0,
       code: "CV_PREVIEW",
       name: "Preview",
       route: "/cv/preview",
-      order: 7,
+      order: 8,
     },
   ];
 
