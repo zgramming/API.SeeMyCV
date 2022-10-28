@@ -4,7 +4,7 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["interactiveTransactions"]
-  output          = "../node_modules/.prisma/client"
+  // output          = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -357,8 +357,13 @@ model CVProfile {
   phone         String?
   email         String?
   web           String?
+  twitter       String?
+  facebook      String?
+  instagram     String?
+  linkedIn      String?
   address       String?
   image         String?  @db.Text()
+  banner_image  String?  @db.Text()
   latest_resume String?  @db.Text()
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt

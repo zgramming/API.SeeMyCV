@@ -14,8 +14,10 @@ const validator = new Validator();
 const prisma = new PrismaClient();
 const CVProfileRouter = new Router({ prefix: "/api/cv/profile" });
 
-const dirUpload = cwd() + "/public/images/cv/profile";
+const dirUploadImage = cwd() + "/public/images/cv/profile";
+const dirUploadFile = cwd() + "/public/file/cv/profile";
 const baseUrlImage = "images/cv/profile";
+const baseUrlFile = "file/cv/profile";
 
 CVProfileRouter.get("/:users_id", async (ctx, next) => {
   const { users_id } = ctx.params;
@@ -25,8 +27,16 @@ CVProfileRouter.get("/:users_id", async (ctx, next) => {
     where: { users_id: +users_id },
   });
 
-  if (result) {
+  if (result?.image) {
     result.image = ctx.origin + "/" + baseUrlImage + "/" + result.image;
+  }
+  if (result?.banner_image) {
+    result.banner_image =
+      ctx.origin + "/" + baseUrlImage + "/" + result.banner_image;
+  }
+  if (result?.latest_resume) {
+    result.latest_resume =
+      ctx.origin + "/" + baseUrlFile + "/" + result.latest_resume;
   }
 
   return (ctx.body = {
@@ -37,10 +47,27 @@ CVProfileRouter.get("/:users_id", async (ctx, next) => {
 
 CVProfileRouter.post("/", async (ctx, next) => {
   try {
-    const createDir = mkdirSync(dirUpload, { recursive: true });
+    mkdirSync(dirUploadImage, { recursive: true });
+    mkdirSync(dirUploadFile, { recursive: true });
 
-    const { users_id, name, motto, description, phone, email, web, address } =
-      ctx.request.body;
+    const {
+      users_id,
+      name,
+      motto,
+      description,
+      phone,
+      email,
+      web,
+      twitter,
+      facebook,
+      instagram,
+      linkedIn,
+      address,
+    } = ctx.request.body;
+    const tempPathFile: Array<{
+      oldpath: string;
+      newPath: string;
+    }> = [];
     const files = ctx.request.files;
 
     console.log({ files: files, body: ctx.request.body, header: ctx.headers });
@@ -58,9 +85,15 @@ CVProfileRouter.post("/", async (ctx, next) => {
       phone,
       email,
       web,
+      twitter,
+      facebook,
+      instagram,
+      linkedIn,
       address,
       users_id: +users_id,
       image: profile?.image,
+      banner_image: profile?.banner_image,
+      latest_resume: profile?.latest_resume,
     };
 
     const schema = {
@@ -86,7 +119,7 @@ CVProfileRouter.post("/", async (ctx, next) => {
       const validateFile = validationFile({
         file: file,
         allowedMimetype: ["png", "jpg", "jpeg"],
-        limitSizeMB: 1,
+        limitSizeMB: 0.5,
         onError(message) {
           ctx.status = 400;
           throw new Error(message);
@@ -100,16 +133,90 @@ CVProfileRouter.post("/", async (ctx, next) => {
       const fullname = nameProfileFile + extOri;
 
       /// Upload image
-      renameSync(file.filepath, `${dirUpload}/${fullname}`);
+      tempPathFile.push({
+        oldpath: file.filepath,
+        newPath: `${dirUploadImage}/${fullname}`,
+      });
 
       /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
       /// Maka file yang lama akan dihapus
       if (extOri !== extProfileFile && profile?.image) {
-        unlinkSync(dirUpload + "/" + profile.image);
+        unlinkSync(dirUploadImage + "/" + profile.image);
       }
 
       /// Adding object into request body
       data.image = fullname;
+    }
+
+    if (files?.banner_image) {
+      const file = files!.banner_image as any;
+      const { originalFilename } = file;
+      const validateFile = validationFile({
+        file: file,
+        allowedMimetype: ["png", "jpg", "jpeg"],
+        limitSizeMB: 1,
+        onError(message) {
+          ctx.status = 400;
+          throw new Error(message);
+        },
+      });
+
+      const { ext: extOri } = parse(originalFilename);
+      const filename = profile?.banner_image
+        ? profile.banner_image
+        : uuidV4() + extOri;
+
+      const { name: nameProfileFile, ext: extProfileFile } = parse(filename);
+      const fullname = nameProfileFile + extOri;
+
+      tempPathFile.push({
+        oldpath: file.filepath,
+        newPath: `${dirUploadImage}/${fullname}`,
+      });
+      /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
+      /// Maka file yang lama akan dihapus
+      if (extOri !== extProfileFile && profile?.banner_image) {
+        unlinkSync(dirUploadImage + "/" + profile.banner_image);
+      }
+
+      /// Adding object into request body
+      data.banner_image = fullname;
+    }
+
+    if (files?.latest_resume) {
+      const file = files!.latest_resume as any;
+      const { originalFilename } = file;
+      const validateFile = validationFile({
+        file: file,
+        allowedMimetype: ["pdf"],
+        limitSizeMB: 0.5,
+        onError(message) {
+          ctx.status = 400;
+          throw new Error(message);
+        },
+      });
+
+      const { ext: extOri } = parse(originalFilename);
+      const filename = profile?.latest_resume
+        ? profile.latest_resume
+        : uuidV4() + extOri;
+
+      const { name: nameProfileFile, ext: extProfileFile } = parse(filename);
+      const fullname = nameProfileFile + extOri;
+
+      tempPathFile.push({
+        oldpath: file.filepath,
+        newPath: `${dirUploadImage}/${fullname}`,
+      });
+
+      /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
+      /// Maka file yang lama akan dihapus
+      if (extOri !== extProfileFile && profile?.latest_resume) {
+        unlinkSync(dirUploadFile + "/" + profile.latest_resume);
+      }
+
+      /// Adding object into request body
+      data.latest_resume = fullname;
     }
 
     const upsert = await prisma.cVProfile.upsert({
@@ -118,8 +225,11 @@ CVProfileRouter.post("/", async (ctx, next) => {
       update: data,
     });
 
-    upsert.image = ctx.origin + "/" + baseUrlImage + "/" + upsert.image;
-
+    /// We assume all validation file already passed & Query SQL too, then we start upload all file
+    tempPathFile.forEach((val, index) => {
+      renameSync(val.oldpath, val.newPath);
+    });
+    
     return (ctx.body = {
       success: true,
       message: "Berhasil mengupdate user dengan nama " + name,
