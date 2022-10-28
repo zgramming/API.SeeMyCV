@@ -71,7 +71,9 @@ export const validationFile = ({
   }
 
   if ((file.size as number) > mbTObytes(limitSizeMB)) {
-    return onError(`File tidak boleh melebihi ${limitSizeMB}Mb`);
+    return onError(
+      `File ${file.originalFilename} tidak boleh melebihi ${limitSizeMB}Mb`
+    );
   }
 
   return true;
