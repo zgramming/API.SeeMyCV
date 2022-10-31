@@ -330,6 +330,12 @@ model CVPortfolio {
   user        Users            @relation(fields: [users_id], references: [id], onDelete: Cascade)
   urls        CVPortfolioUrl[]
 
+  /// Make Slug uniq only when same user create duplicate slug
+  /// example : user | slug
+  /// user1 | my-application
+  /// user2 | my-application
+  /// Above example still work, because although slug has same name but the user is different
+  @@unique([users_id, slug])
   @@map("cv_portfolio")
 }
 
