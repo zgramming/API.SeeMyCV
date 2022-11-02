@@ -8,6 +8,8 @@ const V1UserRouter = new Router({ prefix: "/api/v1/user" });
 const baseUrlFileProfile = "file/cv/profile";
 const baseUrlImagesProfile = "images/cv/profile";
 
+const baseUrlImagesExperience = "images/cv/experience";
+
 V1UserRouter.get("/:username", async (ctx, next) => {
   try {
     const { username } = ctx.params;
@@ -52,6 +54,13 @@ V1UserRouter.get("/:username", async (ctx, next) => {
         profile.latest_resume = `${ctx.origin}/${baseUrlFileProfile}/${profile.latest_resume}`;
       }
     }
+
+    result.CVExperience = result.CVExperience.map((val) => {
+      if (val.image_company && val.image_company !== "") {
+        val.image_company = `${ctx.origin}/${baseUrlImagesExperience}/${val.image_company}`;
+      }
+      return { ...val };
+    });
     const data = {
       ...result,
       CVProfile: profile,
