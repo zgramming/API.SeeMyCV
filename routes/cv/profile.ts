@@ -72,7 +72,7 @@ CVProfileRouter.post("/", async (ctx, next) => {
     const files = ctx.request.files;
 
     console.log({ files: files, body: ctx.request.body, header: ctx.headers });
-    const profile = await prisma.cVProfile.findFirst({
+    const profile = await prisma.cVProfile.findFirstOrThrow({
       where: { users_id: +(users_id ?? "0") },
       include: {
         user: true,
@@ -80,11 +80,11 @@ CVProfileRouter.post("/", async (ctx, next) => {
     });
 
     const data = {
+      email: profile.email,
       name,
       motto,
       description,
       phone,
-      email,
       web,
       twitter,
       facebook,

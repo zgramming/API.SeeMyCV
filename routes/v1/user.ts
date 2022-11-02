@@ -1,6 +1,10 @@
-import Router from "koa-router";
+import { hashSync } from 'bcrypt';
+import Validator from 'fastest-validator';
+import Router from 'koa-router';
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
+
+import { ERROR_TYPE_VALIDATION } from '../../utils/constant';
 
 const prisma = new PrismaClient();
 const V1UserRouter = new Router({ prefix: "/api/v1/user" });
@@ -12,6 +16,7 @@ const baseUrlImagesProfile = "images/cv/profile";
 const baseUrlImagesExperience = "images/cv/experience";
 const baseUrlImagesEducation = "images/cv/education";
 const baseUrlImagesPortfolio = "images/cv/portfolio";
+const validator = new Validator();
 
 V1UserRouter.get("/:username", async (ctx, next) => {
   try {
@@ -111,4 +116,58 @@ V1UserRouter.get("/:username", async (ctx, next) => {
   }
 });
 
+V1UserRouter.post("/signup", async (ctx, next) => {
+  try {
+    const saltRounds = 10;
+    const { username, password, email } = ctx.request.body;
+    const data = {
+      username,
+      password,
+      email,
+      name: username,
+    };
+    const schema = {
+      username: { type: "string", min: 8, alphadash: true },
+      password: { type: "string", min: 8 },
+      email: { type: "email" },
+    };
+    const createSchema = validator.compile(schema);
+    const check = await createSchema({ ...data });
+    if (check !== true) {
+      ctx.status = 400;
+      return (ctx.body = {
+        success: false,
+        type: ERROR_TYPE_VALIDATION,
+        message: check,
+      });
+    }
+
+    const groupUser = await prisma.appGroupUser.findFirstOrThrow({
+      where: {
+        code: "user",
+      },
+    });
+
+    const create = await prisma.users.create({
+      data: {
+        ...data,
+        password: hashSync(password, saltRounds),
+        app_group_user_id: groupUser.id,
+      },
+    });
+
+    ctx.status = 200;
+    ctx.body = {
+      success: true,
+      message: "Berhasil membuat user dengan username " + username,
+      data: create,
+    };
+  } catch (error: any) {
+    ctx.status = error.statusCode || error.status || 500;
+    ctx.body = {
+      success: false,
+      message: error.message,
+    };
+  }
+});
 export default V1UserRouter;
