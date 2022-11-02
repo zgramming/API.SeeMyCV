@@ -384,6 +384,7 @@ model CVProfile {
   facebook      String?
   instagram     String?
   linkedIn      String?
+  github        String?
   address       String?
   image         String?  @db.Text()
   banner_image  String?  @db.Text()

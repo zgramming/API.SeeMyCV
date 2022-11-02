@@ -16,8 +16,8 @@ const CVLicenseCertificateRouter = new Router({
   prefix: "/api/cv/license_certificate",
 });
 
-const dirUpload = cwd() + "/public/images/cv/license_certificate";
-const baseUrlFile = "images/cv/license_certificate";
+const dirUploadFile = cwd() + "/public/file/cv/license_certificate";
+const baseUrlFile = "file/cv/license_certificate";
 
 CVLicenseCertificateRouter.get("/:users_id", async (ctx, next) => {
   const { users_id } = ctx.params;
@@ -40,7 +40,7 @@ CVLicenseCertificateRouter.get("/:users_id", async (ctx, next) => {
 
 CVLicenseCertificateRouter.post("/", async (ctx, next) => {
   try {
-    const createDir = mkdirSync(dirUpload, { recursive: true });
+    mkdirSync(dirUploadFile, { recursive: true });
 
     const {
       id,
@@ -131,12 +131,12 @@ CVLicenseCertificateRouter.post("/", async (ctx, next) => {
       const fullname = nameLicenseFile + extOri;
 
       /// Upload image
-      renameSync(file.filepath, `${dirUpload}/${fullname}`);
+      renameSync(file.filepath, `${dirUploadFile}/${fullname}`);
 
       /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
       /// Maka file yang lama akan dihapus
       if (extOri !== extLicenseFile && licenseCertificate?.file) {
-        unlinkSync(dirUpload + "/" + licenseCertificate.file);
+        unlinkSync(dirUploadFile + "/" + licenseCertificate.file);
       }
 
       /// Adding object into request body
@@ -196,8 +196,10 @@ CVLicenseCertificateRouter.del("/:id", async (ctx, next) => {
       where: { id: licenseCertificate?.id },
     });
 
-    const pathFile = dirUpload + `/${del.file}`;
-    if (existsSync(pathFile)) unlinkSync(pathFile);
+    if (del.file && del.file !== "") {
+      const pathFile = dirUploadFile + `/${del.file}`;
+      if (existsSync(pathFile)) unlinkSync(pathFile);
+    }
 
     ctx.status = 200;
     return (ctx.body = {

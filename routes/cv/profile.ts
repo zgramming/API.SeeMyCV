@@ -62,6 +62,7 @@ CVProfileRouter.post("/", async (ctx, next) => {
       facebook,
       instagram,
       linkedIn,
+      github,
       address,
     } = ctx.request.body;
     const tempPathFile: Array<{
@@ -89,6 +90,7 @@ CVProfileRouter.post("/", async (ctx, next) => {
       facebook,
       instagram,
       linkedIn,
+      github,
       address,
       users_id: +users_id,
       image: profile?.image,
@@ -206,7 +208,7 @@ CVProfileRouter.post("/", async (ctx, next) => {
 
       tempPathFile.push({
         oldpath: file.filepath,
-        newPath: `${dirUploadImage}/${fullname}`,
+        newPath: `${dirUploadFile}/${fullname}`,
       });
 
       /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
@@ -225,11 +227,13 @@ CVProfileRouter.post("/", async (ctx, next) => {
       update: data,
     });
 
+    console.log({ tempPathFile });
+
     /// We assume all validation file already passed & Query SQL too, then we start upload all file
     tempPathFile.forEach((val, index) => {
       renameSync(val.oldpath, val.newPath);
     });
-    
+
     return (ctx.body = {
       success: true,
       message: "Berhasil mengupdate user dengan nama " + name,

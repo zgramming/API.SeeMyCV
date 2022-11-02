@@ -24,10 +24,11 @@ import ModulRouter from "./routes/setting/modul";
 import ParameterRouter from "./routes/setting/parameter";
 import UserRouter from "./routes/setting/user";
 import UserGroupRouter from "./routes/setting/user_group";
+import V1UserRouter from "./routes/v1/user";
 
 const cors = require("@koa/cors");
 const app = new Koa();
-const multer = require("@koa/multer");
+// const multer = require("@koa/multer");
 // app.use(multer());
 app.use(KoaBody({ multipart: true }));
 
@@ -98,6 +99,9 @@ app.use(
 app.use(
   KoaCompose([CVContactRouter.routes(), CVContactRouter.allowedMethods()])
 );
+
+/// V1
+app.use(KoaCompose([V1UserRouter.routes(), V1UserRouter.allowedMethods()]));
 
 app.listen(process.env.PORT, () => {
   console.log("Koa server is started on " + process.env.PORT);
