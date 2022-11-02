@@ -6,9 +6,12 @@ const prisma = new PrismaClient();
 const V1UserRouter = new Router({ prefix: "/api/v1/user" });
 
 const baseUrlFileProfile = "file/cv/profile";
-const baseUrlImagesProfile = "images/cv/profile";
+const baseUrlFileLicenseCertificate = "file/cv/license_certificate";
 
+const baseUrlImagesProfile = "images/cv/profile";
 const baseUrlImagesExperience = "images/cv/experience";
+const baseUrlImagesEducation = "images/cv/education";
+const baseUrlImagesPortfolio = "images/cv/portfolio";
 
 V1UserRouter.get("/:username", async (ctx, next) => {
   try {
@@ -31,6 +34,11 @@ V1UserRouter.get("/:username", async (ctx, next) => {
       include: {
         CVSkill: {
           include: { level: true },
+          orderBy: {
+            level: {
+              order: "desc",
+            },
+          },
         },
         CVProfile: true,
         CVPortfolio: true,
@@ -61,6 +69,28 @@ V1UserRouter.get("/:username", async (ctx, next) => {
       }
       return { ...val };
     });
+
+    result.CVEducation = result.CVEducation.map((val) => {
+      if (val.image && val.image !== "") {
+        val.image = `${ctx.origin}/${baseUrlImagesEducation}/${val.image}`;
+      }
+      return { ...val };
+    });
+
+    result.CVLicenseCertificate = result.CVLicenseCertificate.map((val) => {
+      if (val.file && val.file !== "") {
+        val.file = `${ctx.origin}/${baseUrlFileLicenseCertificate}/${val.file}`;
+      }
+      return { ...val };
+    });
+
+    result.CVPortfolio = result.CVPortfolio.map((val) => {
+      if (val.thumbnail && val.thumbnail !== "") {
+        val.thumbnail = `${ctx.origin}/${baseUrlImagesPortfolio}/${val.thumbnail}`;
+      }
+      return { ...val };
+    });
+
     const data = {
       ...result,
       CVProfile: profile,
