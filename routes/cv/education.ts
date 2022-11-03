@@ -53,7 +53,10 @@ CVEducationRouter.post("/", async (ctx, next) => {
       is_graduated,
     } = ctx.request.body;
     const files = ctx.request.files;
-    const education = await prisma.cVEducation.findFirst({ where: { id } });
+    const education = await prisma.cVEducation.findFirst({
+      where: { id: id ?? "" },
+    });
+
     const data = {
       id: education?.id,
       users_id: +users_id,

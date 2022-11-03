@@ -60,7 +60,7 @@ CVPortfolioRouter.post("/", async (ctx, next) => {
     } = ctx.request.body;
     const files = ctx.request.files;
     const portfolio = await prisma.cVPortfolio.findFirst({
-      where: { id: id ?? "-1" },
+      where: { id: id ?? "" },
     });
 
     const data = {

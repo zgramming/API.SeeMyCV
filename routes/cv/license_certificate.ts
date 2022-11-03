@@ -55,11 +55,9 @@ CVLicenseCertificateRouter.post("/", async (ctx, next) => {
     } = ctx.request.body;
     const files = ctx.request.files;
 
-    const licenseCertificate = !id
-      ? null
-      : await prisma.cVLicenseCertificate.findFirst({
-          where: { id: id },
-        });
+    const licenseCertificate = await prisma.cVLicenseCertificate.findFirst({
+      where: { id: id ??"" },
+    });
 
     const data = {
       id: licenseCertificate?.id,

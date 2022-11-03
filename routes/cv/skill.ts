@@ -26,9 +26,7 @@ CVSkillRouter.get("/:users_id", async (ctx, next) => {
 CVSkillRouter.post("/", async (ctx, next) => {
   try {
     const { id, users_id, name, level_id } = ctx.request.body;
-    const skill = !id
-      ? null
-      : await prisma.cVSkill.findFirst({ where: { id: id } });
+    const skill = await prisma.cVSkill.findFirst({ where: { id: id ?? "" } });
     const data = {
       id: skill?.id,
       users_id: +users_id,

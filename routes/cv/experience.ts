@@ -57,7 +57,9 @@ CVExperienceRouter.post("/", async (ctx, next) => {
       tags,
     } = ctx.request.body;
 
-    const exp = await prisma.cVExperience.findFirst({ where: { id } });
+    const exp = await prisma.cVExperience.findFirst({
+      where: { id: id ?? "" },
+    });
 
     const data = {
       id: exp?.id,
