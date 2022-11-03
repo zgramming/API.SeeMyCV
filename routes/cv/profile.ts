@@ -22,7 +22,6 @@ const baseUrlFile = "file/cv/profile";
 CVProfileRouter.get("/:users_id", async (ctx, next) => {
   const { users_id } = ctx.params;
 
-  
   const users = await prisma.users.findFirst({
     where: { id: +users_id },
     include: {
@@ -110,9 +109,10 @@ CVProfileRouter.post("/", async (ctx, next) => {
     const createSchema = validator.compile(schema);
     const check = await createSchema({
       users_id: users.id,
-      name,
       motto,
+      description,
     });
+
     if (check !== true) {
       ctx.status = 400;
       return (ctx.body = {
@@ -243,7 +243,7 @@ CVProfileRouter.post("/", async (ctx, next) => {
 
     return (ctx.body = {
       success: true,
-      message: "Berhasil mengupdate user dengan nama " + name,
+      message: "Berhasil mengupdate user dengan nama " + users.name,
       data: upsert,
     });
   } catch (error: any) {
