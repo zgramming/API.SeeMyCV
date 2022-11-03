@@ -217,7 +217,7 @@ model Parameter {
 model Users {
   id                Int        @id @default(autoincrement())
   app_group_user_id Int
-  name              String     @db.VarChar(100)
+  name              String?    @db.VarChar(100)
   email             String     @unique @db.VarChar(100)
   username          String     @unique @db.VarChar(50)
   password          String     @db.Text
@@ -229,7 +229,7 @@ model Users {
   updated_by Int?
 
   app_group_user       AppGroupUser           @relation(fields: [app_group_user_id], references: [id], onDelete: Cascade)
-  CVProfile            CVProfile[]
+  CVProfile            CVProfile?
   CVEducation          CVEducation[]
   CVExperience         CVExperience[]
   CVSkill              CVSkill[]
@@ -381,11 +381,9 @@ model CVPreview {
 model CVProfile {
   id            String   @id @default(uuid())
   users_id      Int      @unique
-  name          String   @db.VarChar(100)
   motto         String   @db.Text()
   description   String?  @db.LongText()
   phone         String?
-  email         String?
   web           String?
   twitter       String?
   facebook      String?

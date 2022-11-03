@@ -1,8 +1,11 @@
 import { hashSync } from "bcrypt";
 import Router from "koa-router";
+import Validator from "fastest-validator";
 
 import { PrismaClient, UserStatus } from "@prisma/client";
+import { ERROR_TYPE_VALIDATION } from "../../utils/constant";
 
+const validator = new Validator();
 const prisma = new PrismaClient();
 const UserRouter = new Router({ prefix: "/api/setting/user" });
 
@@ -136,6 +139,56 @@ UserRouter.put("/:id", async (ctx, next) => {
       message: "Berhasil mengupdate user dengan nama " + name,
     });
   } catch (error: any) {
+    ctx.status = error.statusCode || error.status || 500;
+    ctx.body = {
+      success: false,
+      message: error.message,
+    };
+  }
+});
+
+UserRouter.put("/update_name/:id", async (ctx, next) => {
+  try {
+    const { id } = ctx.params;
+    const { name } = ctx.request.body;
+
+    const user = await prisma.users.findFirstOrThrow({
+      where: { id: +id },
+    });
+
+    const schema = {
+      name: { type: "string", empty: false },
+    };
+
+    const createSchema = validator.compile(schema);
+    const check = await createSchema({
+      name,
+    });
+
+    if (check !== true) {
+      ctx.status = 400;
+      return (ctx.body = {
+        success: false,
+        type: ERROR_TYPE_VALIDATION,
+        message: check,
+      });
+    }
+
+    const update = await prisma.users.update({
+      where: { id: user.id },
+      data: {
+        ...user,
+        name: name,
+      },
+    });
+    ctx.status = 200;
+    return (ctx.body = {
+      success: true,
+      message: "Berhasil mengupdate nama",
+      data: update,
+    });
+  } catch (error: any) {
+    console.log({ error: error });
     ctx.status = error.statusCode || error.status || 500;
     ctx.body = {
       success: false,

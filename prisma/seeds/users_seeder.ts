@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, UserStatus } from "@prisma/client";
 import { hashSync } from "bcrypt";
 const saltRounds = 10;
 
@@ -21,7 +21,7 @@ const UsersSeeder = async () => {
       email: "superadmin@gmail.com",
       username: "superadmin",
       password: hashSync("superadmin", saltRounds),
-      status: "active",
+      status: "active" as UserStatus,
     },
     {
       app_group_user_id: user?.id ?? 0,
@@ -29,7 +29,7 @@ const UsersSeeder = async () => {
       email: "zeffry.reynando@gmail.com",
       username: "zeffry",
       password: hashSync("zeffry", saltRounds),
-      status: "active",
+      status: "active" as UserStatus,
     },
   ];
   await prisma.users.createMany({ data: data });

@@ -53,8 +53,7 @@ V1UserRouter.get("/:username", async (ctx, next) => {
       },
     });
 
-    const profile =
-      result.CVProfile.length === 0 ? undefined : result.CVProfile[0];
+    const profile = result.CVProfile;
 
     if (profile) {
       if (profile.image && profile.image !== "") {

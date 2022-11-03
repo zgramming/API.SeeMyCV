@@ -22,10 +22,15 @@ const baseUrlFile = "file/cv/profile";
 CVProfileRouter.get("/:users_id", async (ctx, next) => {
   const { users_id } = ctx.params;
 
-  const result = await prisma.cVProfile.findFirst({
-    include: { user: true },
-    where: { users_id: +users_id },
+  
+  const users = await prisma.users.findFirst({
+    where: { id: +users_id },
+    include: {
+      CVProfile: true,
+    },
   });
+  console.log({ users });
+  const result = users?.CVProfile;
 
   if (result?.image) {
     result.image = ctx.origin + "/" + baseUrlImage + "/" + result.image;
@@ -40,7 +45,7 @@ CVProfileRouter.get("/:users_id", async (ctx, next) => {
   }
 
   return (ctx.body = {
-    data: result,
+    data: users,
     success: true,
   });
 });
@@ -52,11 +57,9 @@ CVProfileRouter.post("/", async (ctx, next) => {
 
     const {
       users_id,
-      name,
       motto,
       description,
       phone,
-      email,
       web,
       twitter,
       facebook,
@@ -72,16 +75,16 @@ CVProfileRouter.post("/", async (ctx, next) => {
     const files = ctx.request.files;
 
     console.log({ files: files, body: ctx.request.body, header: ctx.headers });
-    const profile = await prisma.cVProfile.findFirstOrThrow({
-      where: { users_id: +(users_id ?? "0") },
+    const users = await prisma.users.findFirstOrThrow({
+      where: { id: +users_id },
       include: {
-        user: true,
+        CVProfile: true,
       },
     });
 
+    const profile = users.CVProfile;
+
     const data = {
-      email: profile.email,
-      name,
       motto,
       description,
       phone,
@@ -92,7 +95,7 @@ CVProfileRouter.post("/", async (ctx, next) => {
       linkedIn,
       github,
       address,
-      users_id: +users_id,
+      users_id: users.id,
       image: profile?.image,
       banner_image: profile?.banner_image,
       latest_resume: profile?.latest_resume,
@@ -100,12 +103,16 @@ CVProfileRouter.post("/", async (ctx, next) => {
 
     const schema = {
       users_id: { type: "number" },
-      name: { type: "string" },
       motto: { type: "string" },
+      description: { type: "string" },
     };
 
     const createSchema = validator.compile(schema);
-    const check = await createSchema({ users_id: +users_id, name, motto });
+    const check = await createSchema({
+      users_id: users.id,
+      name,
+      motto,
+    });
     if (check !== true) {
       ctx.status = 400;
       return (ctx.body = {
@@ -222,7 +229,7 @@ CVProfileRouter.post("/", async (ctx, next) => {
     }
 
     const upsert = await prisma.cVProfile.upsert({
-      where: { users_id: +users_id },
+      where: { users_id: users.id },
       create: data,
       update: data,
     });
