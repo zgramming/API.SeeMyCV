@@ -1,7 +1,7 @@
 import { hashSync } from "bcrypt";
 import Router from "koa-router";
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, UserStatus } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const UserRouter = new Router({ prefix: "/api/setting/user" });
@@ -14,13 +14,13 @@ UserRouter.get("/", async (ctx, next) => {
     name,
     app_group_user_id = 0,
     status,
-    limit = 10,
-    offset = 0,
+    limit,
+    offset,
   }: {
     username?: string;
     name?: string;
     app_group_user_id?: number;
-    status?: string;
+    status?: UserStatus;
     limit?: number;
     offset?: number;
   } = ctx.query;
@@ -56,7 +56,7 @@ UserRouter.post("/", async (ctx, next) => {
       email?: string;
       username?: string;
       password?: string;
-      status?: string;
+      status?: UserStatus;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
     if (app_group_user_id == 0) ctx.throw("Group User required", 400);
@@ -64,7 +64,6 @@ UserRouter.post("/", async (ctx, next) => {
     if (email == "") ctx.throw("Email required", 400);
     if (username == "") ctx.throw("Username required", 400);
     if (password == "") ctx.throw("Password required", 400);
-    if (status == "") ctx.throw("Status required", 400);
 
     const result = await prisma.users.create({
       data: {
@@ -107,7 +106,7 @@ UserRouter.put("/:id", async (ctx, next) => {
       email?: string;
       username?: string;
       password?: string;
-      status?: string;
+      status?: UserStatus;
     } = JSON.parse(JSON.stringify(ctx.request.body));
 
     if (id == 0) ctx.throw("ID Required", 400);
@@ -116,7 +115,6 @@ UserRouter.put("/:id", async (ctx, next) => {
     if (email == "") ctx.throw("Email required", 400);
     if (username == "") ctx.throw("Username required", 400);
     if (password == "") ctx.throw("Password required", 400);
-    if (status == "") ctx.throw("Status required", 400);
 
     const result = await prisma.users.update({
       where: {
