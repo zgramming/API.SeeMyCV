@@ -32,13 +32,31 @@ LoginRouter.post("/", async (ctx, next) => {
       ctx.throw(`Username ${username} atau password tidak valid`, 400);
     }
 
+    if (user?.status != "active") {
+      if (user?.status == "blocked") {
+        ctx.throw(`Akun dengan username ${username} terblokir`, 403);
+      } else if (user?.status == "process_verification") {
+        ctx.throw(
+          `Silahkan lanjutkan proses verifikasi email terlebih dahulu`,
+          403
+        );
+      } else {
+        ctx.throw(
+          `Akun tidak aktif, silahkan hubungin admin untuk proses pemulihan akun`,
+          403
+        );
+      }
+    }
+
     const accessMenu = user!.app_group_user.access_menu;
 
     if (accessMenu.length == 0) {
       ctx.throw(
-        `Username ${username} tidak mempunyai hak akses menu di aplikasi, silahkan hubungi admin`
+        `Username ${username} tidak mempunyai hak akses menu di aplikasi, silahkan hubungi admin`,
+        403     
       );
     }
+
     accessMenu.sort((a, b) => a.app_menu.order - b.app_menu.order);
     const firstRoute = accessMenu[0].app_menu.route;
 
