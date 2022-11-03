@@ -1,10 +1,10 @@
-import { hashSync } from 'bcrypt';
-import Validator from 'fastest-validator';
-import Router from 'koa-router';
+import { hashSync } from "bcrypt";
+import Validator from "fastest-validator";
+import Router from "koa-router";
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
-import { ERROR_TYPE_VALIDATION } from '../../utils/constant';
+import { ERROR_TYPE_VALIDATION } from "../../utils/constant";
 
 const prisma = new PrismaClient();
 const V1UserRouter = new Router({ prefix: "/api/v1/user" });
@@ -151,6 +151,7 @@ V1UserRouter.post("/signup", async (ctx, next) => {
     const create = await prisma.users.create({
       data: {
         ...data,
+        status: "process_verification",
         password: hashSync(password, saltRounds),
         app_group_user_id: groupUser.id,
       },
