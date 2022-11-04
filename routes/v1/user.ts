@@ -45,11 +45,23 @@ V1UserRouter.get("/:username", async (ctx, next) => {
             },
           },
         },
+        CVExperience: {
+          orderBy: {
+            start_date: "desc",
+          },
+        },
+        CVEducation: {
+          orderBy: {
+            start_date: "desc",
+          },
+        },
+        CVLicenseCertificate: {
+          orderBy: {
+            start_date: "desc",
+          },
+        },
         CVProfile: true,
         CVPortfolio: true,
-        CVLicenseCertificate: true,
-        CVExperience: true,
-        CVEducation: true,
       },
     });
 
