@@ -9,6 +9,7 @@
         "prisma:seeder": "ts-node prisma/seeds/seed.ts"
     },
     "devDependencies": {
+        "@swc/core": "^1.3.14",
         "@types/koa-json": "^2.0.20",
         "@types/koa-logger": "^3.1.2",
         "@types/koa-router": "^7.4.4",

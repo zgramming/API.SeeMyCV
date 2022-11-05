@@ -33,3 +33,5 @@ jobs:
             git reset --hard
             echo "Pull Rebase"
             git pull --rebase
+            echo "NPM I if available new package"
+            npm i
