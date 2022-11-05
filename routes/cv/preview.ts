@@ -10,73 +10,43 @@ const CVPreviewRouter = new Router({ prefix: "/api/cv/preview" });
 
 CVPreviewRouter.get("/pdf/:users_id", async (ctx, next) => {
   const { users_id } = ctx.params;
-
-  const profile = await prisma.cVProfile.findFirst({
-    include: { user: true },
-    where: { users_id: +users_id },
-  });
-
-  const education = await prisma.cVEducation.findMany({
-    include: { user: true },
-    where: { users_id: +users_id },
-    orderBy: { start_date: "desc" },
-  });
-
-  const experience = await prisma.cVExperience.findMany({
-    where: { users_id: +users_id },
-    orderBy: { start_date: "desc" },
-  });
-
-  const skill = await prisma.cVSkill.findMany({
-    include: {
-      level: true,
-      user: true,
-    },
-    where: { users_id: +users_id },
-    orderBy: {
-      level: { order: "asc" },
-    },
-  });
-
-  const licenseAndCertificate = await prisma.cVLicenseCertificate.findMany({
-    where: { users_id: +users_id },
-    include: {
-      user: true,
-    },
-    orderBy: {
-      start_date: "asc",
-    },
-  });
-
-  const portfolio = await prisma.cVPortfolio.findMany({
-    include: { urls: true, user: true },
-    where: { users_id: +users_id },
-    orderBy: { title: "asc" },
-  });
-
-  const masterLevel = await prisma.masterData.findMany({
+  const result = await prisma.users.findFirstOrThrow({
     where: {
-      master_category: {
-        code: "LEVEL_SKILL",
-      },
+      id: +users_id,
     },
-    orderBy: {
-      order: "asc",
+    include: {
+      CVSkill: {
+        include: { level: true },
+        orderBy: {
+          level: {
+            order: "desc",
+          },
+        },
+      },
+      CVExperience: {
+        orderBy: {
+          start_date: "desc",
+        },
+      },
+      CVEducation: {
+        orderBy: {
+          start_date: "desc",
+        },
+      },
+      CVLicenseCertificate: {
+        orderBy: {
+          start_date: "desc",
+        },
+      },
+      CVProfile: true,
+      CVPortfolio: true,
     },
   });
 
   ctx.status = 200;
   return (ctx.body = {
     message: "Berhasil mendapatkan data preview",
-    data: {
-      profile,
-      education,
-      experience,
-      skill,
-      licenseAndCertificate,
-      portfolio,
-      master_level: masterLevel,
-    },
+    data: result,
   });
 });
 
