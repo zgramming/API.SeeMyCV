@@ -28,6 +28,8 @@ import V1UserRouter from "./routes/v1/user";
 
 const cors = require("@koa/cors");
 const app = new Koa();
+require("dotenv").config();
+
 // const multer = require("@koa/multer");
 // app.use(multer());
 app.use(KoaBody({ multipart: true }));

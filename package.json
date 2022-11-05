@@ -28,6 +28,7 @@
         "@types/koa-static": "^4.0.2",
         "@types/uuid": "^8.3.4",
         "bcrypt": "^5.0.1",
+        "dotenv": "^16.0.3",
         "fastest-validator": "^1.15.0",
         "koa": "^2.13.4",
         "koa-body": "^5.0.0",
