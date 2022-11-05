@@ -34,4 +34,7 @@ jobs:
             echo "Pull Rebase"
             git pull --rebase
             echo "NPM I if available new package"
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            npm --help
             npm i
