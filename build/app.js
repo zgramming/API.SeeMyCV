@@ -39,7 +39,7 @@ app.use(cors());
 app.use((0, koa_json_1.default)());
 app.use((0, koa_logger_1.default)());
 /// Make folder file accessible via url
-app.use((0, koa_static_1.default)(__dirname + "/public"));
+app.use((0, koa_static_1.default)("./public"));
 app.use((0, koa_compose_1.default)([login_1.default.routes(), login_1.default.allowedMethods()]));
 /// Setting
 app.use((0, koa_compose_1.default)([user_1.default.routes(), user_1.default.allowedMethods()]));

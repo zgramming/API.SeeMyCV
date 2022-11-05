@@ -39,7 +39,7 @@ app.use(Json());
 app.use(Logger());
 
 /// Make folder file accessible via url
-app.use(Serve(__dirname + "/public"));
+app.use(Serve("./public"));
 
 app.use(KoaCompose([LoginRouter.routes(), LoginRouter.allowedMethods()]));
 
