@@ -1,0 +1,4 @@
+# Step untuk running file typescript menggunakan PM2 dengan install node & npm menggunakan NVM
+
+Untuk mendapatkan lokasi install node, gunakan command `nvm which node`
+pm2 start app.ts --interpreter=/home/seemycv/.nvm/versions/node/v18.12.1/bin/node
