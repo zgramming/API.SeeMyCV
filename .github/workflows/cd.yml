@@ -38,3 +38,5 @@ jobs:
             source ~/.nvm/nvm.sh
             npm --help
             npm i
+            echo "Restart Application, api is name pm2 instance application"
+            pm2 restart api

@@ -1,30 +1,31 @@
-import Koa from "koa";
-import KoaBody from "koa-body";
-import KoaCompose from "koa-compose";
-import Json from "koa-json";
-import Logger from "koa-logger";
-import Serve from "koa-static";
+import Koa from 'koa';
+import KoaBody from 'koa-body';
+import KoaCompose from 'koa-compose';
+import Json from 'koa-json';
+import Logger from 'koa-logger';
+import Serve from 'koa-static';
 
-import CVContactRouter from "./routes/cv/contact";
-import CVEducationRouter from "./routes/cv/education";
-import CVExperienceRouter from "./routes/cv/experience";
-import CVLicenseCertificateRouter from "./routes/cv/license_certificate";
-import CVPortfolioRouter from "./routes/cv/portfolio";
-import CVPreviewRouter from "./routes/cv/preview";
-import CVProfileRouter from "./routes/cv/profile";
-import CVSkillRouter from "./routes/cv/skill";
-import AccessMenuRouter from "./routes/setting/access_menu";
-import AccessModulRouter from "./routes/setting/access_modul";
-import DocumentationRouter from "./routes/setting/documentation";
-import LoginRouter from "./routes/setting/login";
-import MasterCategoryRouter from "./routes/setting/master_category";
-import MasterDataRouter from "./routes/setting/master_data";
-import MenuRouter from "./routes/setting/menu";
-import ModulRouter from "./routes/setting/modul";
-import ParameterRouter from "./routes/setting/parameter";
-import UserRouter from "./routes/setting/user";
-import UserGroupRouter from "./routes/setting/user_group";
-import V1UserRouter from "./routes/v1/user";
+import CVContactRouter from './routes/cv/contact';
+import CVEducationRouter from './routes/cv/education';
+import CVExperienceRouter from './routes/cv/experience';
+import CVLicenseCertificateRouter from './routes/cv/license_certificate';
+import CVPortfolioRouter from './routes/cv/portfolio';
+import CVPreviewRouter from './routes/cv/preview';
+import CVProfileRouter from './routes/cv/profile';
+import CVSkillRouter from './routes/cv/skill';
+import AccessMenuRouter from './routes/setting/access_menu';
+import AccessModulRouter from './routes/setting/access_modul';
+import DocumentationRouter from './routes/setting/documentation';
+import LoginRouter from './routes/setting/login';
+import MasterCategoryRouter from './routes/setting/master_category';
+import MasterDataRouter from './routes/setting/master_data';
+import MenuRouter from './routes/setting/menu';
+import ModulRouter from './routes/setting/modul';
+import ParameterRouter from './routes/setting/parameter';
+import UserRouter from './routes/setting/user';
+import UserGroupRouter from './routes/setting/user_group';
+import V1TemplatePdfRouter from './routes/v1/template_pdf';
+import V1UserRouter from './routes/v1/user';
 
 const cors = require("@koa/cors");
 const app = new Koa();
@@ -40,6 +41,7 @@ app.use(Logger());
 
 /// Make folder file accessible via url
 app.use(Serve("./public"));
+app.use(Serve("./template"));
 
 app.use(KoaCompose([LoginRouter.routes(), LoginRouter.allowedMethods()]));
 
@@ -104,6 +106,12 @@ app.use(
 
 /// V1
 app.use(KoaCompose([V1UserRouter.routes(), V1UserRouter.allowedMethods()]));
+app.use(
+  KoaCompose([
+    V1TemplatePdfRouter.routes(),
+    V1TemplatePdfRouter.allowedMethods(),
+  ])
+);
 
 app.listen(process.env.PORT, () => {
   console.log("Koa server is started on " + process.env.PORT);
