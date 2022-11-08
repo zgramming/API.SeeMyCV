@@ -2,7 +2,8 @@
     "scripts": {
         "convert-tojs": "npx tsc --watch",
         "watch:koa": "npx nodemon app.ts",
-        "start": "concurrently \"npm run watch:koa\" \"npm run convert-tojs\"",
+        "dev": "concurrently \"npm run watch:koa\" \"npm run convert-tojs\"",
+        "start": "node build/app.js",
         "prisma:build": "npm run prisma:migrate && npm run prisma:generate && npm run prisma:format",
         "prisma:build-seeder": "npm run prisma:migrate && npm run prisma:seeder && npm run prisma:generate && npm run prisma:format",
         "prisma:migrate": "npx prisma migrate dev --name init",
