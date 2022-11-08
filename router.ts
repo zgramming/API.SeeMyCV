@@ -1,10 +1,17 @@
 // app.use(KoaCompose([LoginRouter.routes(), LoginRouter.allowedMethods()]));
 
 import Router from "koa-router";
-import { SettingAccessMenuController } from "./routes/setting/access_menu";
 
+import { CVEducationController } from "./routes/cv/education";
+import { CVExperienceController } from "./routes/cv/experience";
+import { CVLicenseCertificateController } from "./routes/cv/license_certificate";
+import { CVPortfolioController } from "./routes/cv/portfolio";
+import { CVPreviewController } from "./routes/cv/preview";
+import { CVProfileController } from "./routes/cv/profile";
+import { SettingAccessMenuController } from "./routes/setting/access_menu";
 import { SettingAccessModulController } from "./routes/setting/access_modul";
 import { SettingDocumentationController } from "./routes/setting/documentation";
+import { LoginController } from "./routes/setting/login";
 import { SettingMasterCategoryController } from "./routes/setting/master_category";
 import { SettingMasterDataController } from "./routes/setting/master_data";
 import { SettingMenuController } from "./routes/setting/menu";
@@ -12,84 +19,17 @@ import { SettingModulController } from "./routes/setting/modul";
 import { SettingParameterController } from "./routes/setting/parameter";
 import { SettingUserController } from "./routes/setting/user";
 import { SettingUserGroupController } from "./routes/setting/user_group";
-
-// /// Setting
-//* app.use(KoaCompose([UserRouter.routes(), UserRouter.allowedMethods()]));
-//* app.use(
-//*  KoaCompose([UserGroupRouter.routes(), UserGroupRouter.allowedMethods()])
-//* );
-
-//* app.use(KoaCompose([ModulRouter.routes(), ModulRouter.allowedMethods()]));
-//* app.use(KoaCompose([MenuRouter.routes(), MenuRouter.allowedMethods()]));
-//* app.use(
-//*   KoaCompose([AccessModulRouter.routes(), AccessModulRouter.allowedMethods()])
-//* );
-//* app.use(
-//*   KoaCompose([AccessMenuRouter.routes(), AccessMenuRouter.allowedMethods()])
-//* );
-
-//* app.use(
-//*   KoaCompose([
-//*     MasterCategoryRouter.routes(),
-//*     MasterCategoryRouter.allowedMethods(),
-//*   ])
-//* );
-
-//* app.use(
-//*   KoaCompose([MasterDataRouter.routes(), MasterDataRouter.allowedMethods()])
-//* );
-
-//* app.use(
-//*   KoaCompose([ParameterRouter.routes(), ParameterRouter.allowedMethods()])
-//* );
-
-//* app.use(
-//*   KoaCompose([
-//*     DocumentationRouter.routes(),
-//*     DocumentationRouter.allowedMethods(),
-//*   ])
-//* );
-
-// /// CV
-// app.use(
-//   KoaCompose([CVProfileRouter.routes(), CVProfileRouter.allowedMethods()])
-// );
-// app.use(
-//   KoaCompose([CVExperienceRouter.routes(), CVExperienceRouter.allowedMethods()])
-// );
-// app.use(
-//   KoaCompose([CVEducationRouter.routes(), CVEducationRouter.allowedMethods()])
-// );
-// app.use(KoaCompose([CVSkillRouter.routes(), CVSkillRouter.allowedMethods()]));
-// app.use(
-//   KoaCompose([
-//     CVLicenseCertificateRouter.routes(),
-//     CVLicenseCertificateRouter.allowedMethods(),
-//   ])
-// );
-// app.use(
-//   KoaCompose([CVPortfolioRouter.routes(), CVPortfolioRouter.allowedMethods()])
-// );
-// app.use(
-//   KoaCompose([CVPreviewRouter.routes(), CVPreviewRouter.allowedMethods()])
-// );
-// app.use(
-//   KoaCompose([CVContactRouter.routes(), CVContactRouter.allowedMethods()])
-// );
-
-// /// V1
-// app.use(KoaCompose([V1UserRouter.routes(), V1UserRouter.allowedMethods()]));
-// app.use(
-//   KoaCompose([
-//     V1TemplatePdfRouter.routes(),
-//     V1TemplatePdfRouter.allowedMethods(),
-//   ])
-// );
+import { V1UserController } from "./routes/v1/user";
 
 const router = new Router({});
 const prefixCV = "/cv";
 const prefixSetting = "/setting";
 const prefixV1 = "/v1";
+
+//! Authentication
+router.post(`/login`, LoginController.login);
+
+//! Setting Section
 
 router.get(`/setting/user`, SettingUserController.getUsers);
 router.post(`/setting/user`, SettingUserController.createUsers);
@@ -157,5 +97,42 @@ router.get(`/setting/documentation`, SettingDocumentationController.get);
 router.post(`/setting/documentation`, SettingDocumentationController.create);
 router.put(`/setting/documentation/:id`, SettingDocumentationController.update);
 router.del(`/setting/documentation/:id`, SettingDocumentationController.delete);
+
+//! CV Section
+router.get(`/cv/profile/:users_id`, CVProfileController.get);
+router.post(`/cv/profile`, CVProfileController.upsert);
+
+router.get(`/cv/experience/:users_id`, CVExperienceController.get);
+router.post(`/cv/experience`, CVExperienceController.upsert);
+router.del(`/cv/experience/:id`, CVExperienceController.delete);
+
+router.get(`/cv/education/:users_id`, CVEducationController.get);
+router.post(`/cv/education`, CVEducationController.upsert);
+router.del(`/cv/education/:id`, CVEducationController.delete);
+
+router.get(
+  `/cv/license_certificate/:users_id`,
+  CVLicenseCertificateController.get
+);
+router.post(`/cv/license_certificate`, CVLicenseCertificateController.upsert);
+router.del(
+  `/cv/license_certificate/:id`,
+  CVLicenseCertificateController.delete
+);
+
+router.get(`/cv/portfolio/:users_id`, CVPortfolioController.get);
+router.post(`/cv/portfolio`, CVPortfolioController.upsert);
+router.del(`/cv/portfolio/:id`, CVPortfolioController.delete);
+
+router.get(`/cv/preview/pdf/:user_id`, CVPreviewController.getPdfPreview);
+router.post(
+  `/cv/preview/generate_pdf/:user_id`,
+  CVPreviewController.generatePDF
+);
+
+router.get(`/cv/contact/:users_id`, CVPreviewController.getPdfPreview);
+
+//! V1 Section
+router.get(`/v1/user/:username`, V1UserController.getByUsername);
 
 export default router;
