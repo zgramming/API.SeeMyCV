@@ -8,123 +8,129 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const koa_router_1 = __importDefault(require("koa-router"));
+exports.SettingModulController = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-const ModulRouter = new koa_router_1.default({ prefix: "/api/setting/modul" });
-ModulRouter.get("/", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { code = "", name = "", pattern = "", status, limit = 10, offset = 0, } = ctx.query;
-    const result = yield prisma.appModul.findMany({
-        where: Object.assign(Object.assign(Object.assign(Object.assign({}, (code && { code: { contains: code } })), (name && { name: { contains: name } })), (pattern && { pattern: pattern })), (status && { status: status })),
-        include: {
-            menus: true,
-            access_menu: true,
-            access_modul: true,
-        },
-        // ...(limit !== 0 && { take: +limit }),
-        // ...(offset !== 0 && { skip: +offset }),
-    });
-    return (ctx.body = { success: true, data: result });
-}));
-ModulRouter.post("/", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { code = "", name = "", pattern = "", icon = "", order = 0, status = "active", } = JSON.parse(JSON.stringify(ctx.request.body));
-        if (code == "")
-            ctx.throw("Code required", 400);
-        if (name == "")
-            ctx.throw("Name required", 400);
-        if (pattern == "")
-            ctx.throw("Pattern required", 400);
-        if (status == "")
-            ctx.throw("Status required", 400);
-        const result = yield prisma.appModul.create({
-            data: {
-                code,
-                name,
-                pattern,
-                icon,
-                order: +order,
-                status,
-            },
-        });
-        return (ctx.body = {
-            success: true,
-            data: result,
-            message: "Berhasil membuat modul dengan nama " + name,
+class SettingModulController {
+    static getModul(ctx, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { code = "", name = "", pattern = "", status, limit, offset, } = ctx.query;
+            const result = yield prisma.appModul.findMany({
+                where: Object.assign(Object.assign(Object.assign(Object.assign({}, (code && { code: { contains: code } })), (name && { name: { contains: name } })), (pattern && { pattern: pattern })), (status && { status: status })),
+                include: {
+                    menus: true,
+                    access_menu: true,
+                    access_modul: true,
+                },
+                // ...(limit !== 0 && { take: +limit }),
+                // ...(offset !== 0 && { skip: +offset }),
+            });
+            return (ctx.body = { success: true, data: result });
         });
     }
-    catch (error) {
-        ctx.status = error.statusCode || error.status || 500;
-        ctx.body = {
-            success: false,
-            message: error.message,
-        };
-    }
-}));
-ModulRouter.put("/:id", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { id = 0 } = ctx.params;
-        const { code = "", name = "", pattern = "", icon = "", order = 0, status = "active", } = JSON.parse(JSON.stringify(ctx.request.body));
-        if (id == 0)
-            ctx.throw("ID Required", 400);
-        if (code == "")
-            ctx.throw("Code required", 400);
-        if (name == "")
-            ctx.throw("Name required", 400);
-        if (pattern == "")
-            ctx.throw("Pattern required", 400);
-        if (status == "")
-            ctx.throw("Status required", 400);
-        const result = yield prisma.appModul.update({
-            where: { id: +id },
-            data: {
-                code,
-                name,
-                pattern,
-                icon,
-                order: +order,
-                status,
-            },
-        });
-        return (ctx.body = {
-            success: true,
-            data: result,
-            message: "Berhasil mengupdate modul dengan nama " + name,
+    static createModul(ctx, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { code = "", name = "", pattern = "", icon = "", order = 0, status = "active", } = JSON.parse(JSON.stringify(ctx.request.body));
+                if (code == "")
+                    ctx.throw("Code required", 400);
+                if (name == "")
+                    ctx.throw("Name required", 400);
+                if (pattern == "")
+                    ctx.throw("Pattern required", 400);
+                if (status == "")
+                    ctx.throw("Status required", 400);
+                const result = yield prisma.appModul.create({
+                    data: {
+                        code,
+                        name,
+                        pattern,
+                        icon,
+                        order: +order,
+                        status,
+                    },
+                });
+                return (ctx.body = {
+                    success: true,
+                    data: result,
+                    message: "Berhasil membuat modul dengan nama " + name,
+                });
+            }
+            catch (error) {
+                ctx.status = error.statusCode || error.status || 500;
+                return (ctx.body = {
+                    success: false,
+                    message: error.message,
+                });
+            }
         });
     }
-    catch (error) {
-        ctx.status = error.statusCode || error.status || 500;
-        ctx.body = {
-            success: false,
-            message: error.message,
-        };
-    }
-}));
-ModulRouter.del("/:id", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { id = 0 } = ctx.params;
-        if (id == 0)
-            ctx.throw("ID is required", 400);
-        const result = yield prisma.appModul.delete({
-            where: { id: +id },
+    static updateModul(ctx, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id = 0 } = ctx.params;
+                const { code = "", name = "", pattern = "", icon = "", order = 0, status = "active", } = JSON.parse(JSON.stringify(ctx.request.body));
+                if (id == 0)
+                    ctx.throw("ID Required", 400);
+                if (code == "")
+                    ctx.throw("Code required", 400);
+                if (name == "")
+                    ctx.throw("Name required", 400);
+                if (pattern == "")
+                    ctx.throw("Pattern required", 400);
+                if (status == "")
+                    ctx.throw("Status required", 400);
+                const result = yield prisma.appModul.update({
+                    where: { id: +id },
+                    data: {
+                        code,
+                        name,
+                        pattern,
+                        icon,
+                        order: +order,
+                        status,
+                    },
+                });
+                return (ctx.body = {
+                    success: true,
+                    data: result,
+                    message: "Berhasil mengupdate modul dengan nama " + name,
+                });
+            }
+            catch (error) {
+                ctx.status = error.statusCode || error.status || 500;
+                return (ctx.body = {
+                    success: false,
+                    message: error.message,
+                });
+            }
         });
-        ctx.status = 200;
-        ctx.body = {
-            success: true,
-            message: "Berhasil menghapus modul",
-            data: result,
-        };
     }
-    catch (error) {
-        ctx.status = error.statusCode || error.status || 500;
-        ctx.body = {
-            success: false,
-            message: error.message,
-        };
+    static deleteModul(ctx, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id = 0 } = ctx.params;
+                if (id == 0)
+                    ctx.throw("ID is required", 400);
+                const result = yield prisma.appModul.delete({
+                    where: { id: +id },
+                });
+                ctx.status = 200;
+                return (ctx.body = {
+                    success: true,
+                    message: "Berhasil menghapus modul",
+                    data: result,
+                });
+            }
+            catch (error) {
+                ctx.status = error.statusCode || error.status || 500;
+                return (ctx.body = {
+                    success: false,
+                    message: error.message,
+                });
+            }
+        });
     }
-}));
-exports.default = ModulRouter;
+}
+exports.SettingModulController = SettingModulController;

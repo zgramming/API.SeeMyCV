@@ -8,84 +8,90 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const koa_router_1 = __importDefault(require("koa-router"));
+exports.SettingAccessMenuController = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
-const AccessMenuRouter = new koa_router_1.default({ prefix: "/api/setting/access_menu" });
-AccessMenuRouter.get("/", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { app_group_user_id = 0, app_modul_id = 0, app_menu_id = 0, } = ctx.query;
-    const result = yield prisma.appAccessMenu.findMany({
-        include: {
-            app_modul: true,
-            app_menu: true,
-            app_group_user: true,
-        },
-        where: Object.assign(Object.assign(Object.assign({}, (app_group_user_id != 0 && { app_group_user_id: +app_group_user_id })), (app_modul_id != 0 && { app_modul_id: +app_modul_id })), (app_menu_id != 0 && { app_menu_id: +app_menu_id })),
-    });
-    return (ctx.body = { success: true, data: result });
-}));
-AccessMenuRouter.get("/by_user_group/:app_group_user_id", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { app_group_user_id } = ctx.params;
-    const { route } = ctx.query;
-    const routeModul = !route
-        ? undefined
-        : "/" + route.split("/").filter((val) => val !== "")[0];
-    const result = yield prisma.appAccessMenu.findMany({
-        include: {
-            app_group_user: true,
-            app_menu: {
-                include: { menu_childrens: true },
-            },
-            app_modul: true,
-        },
-        where: {
-            app_group_user_id: +(app_group_user_id !== null && app_group_user_id !== void 0 ? app_group_user_id : 0),
-            app_modul: { pattern: routeModul },
-        },
-        orderBy: {
-            app_menu: { order: "asc" },
-        },
-    });
-    return (ctx.body = { success: true, data: result });
-}));
-AccessMenuRouter.post("/", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { app_group_user_id = 0, access_menu = [], } = JSON.parse(JSON.stringify(ctx.request.body));
-        const removeAll = yield prisma.appAccessMenu.deleteMany({
-            where: {
-                app_group_user_id: +app_group_user_id,
-            },
-        });
-        const data = access_menu
-            .map((val) => {
-            var _a, _b, _c;
-            return {
-                app_group_user_id: +app_group_user_id,
-                app_menu_id: +((_a = val.app_menu_id) !== null && _a !== void 0 ? _a : 0),
-                app_modul_id: +((_b = val.app_modul_id) !== null && _b !== void 0 ? _b : 0),
-                allowed_access: (_c = val.allowed_access) !== null && _c !== void 0 ? _c : [],
-            };
-        })
-            .filter((val) => val.allowed_access.length != 0);
-        const result = yield prisma.appAccessMenu.createMany({
-            data: data,
-        });
-        return (ctx.body = {
-            success: true,
-            data: result,
-            message: "Berhasil membuat access menu",
+class SettingAccessMenuController {
+    static get(ctx, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { app_group_user_id = 0, app_modul_id = 0, app_menu_id = 0, } = ctx.query;
+            const result = yield prisma.appAccessMenu.findMany({
+                include: {
+                    app_modul: true,
+                    app_menu: true,
+                    app_group_user: true,
+                },
+                where: Object.assign(Object.assign(Object.assign({}, (app_group_user_id != 0 && {
+                    app_group_user_id: +app_group_user_id,
+                })), (app_modul_id != 0 && { app_modul_id: +app_modul_id })), (app_menu_id != 0 && { app_menu_id: +app_menu_id })),
+            });
+            return (ctx.body = { success: true, data: result });
         });
     }
-    catch (error) {
-        ctx.status = error.statusCode || error.status || 500;
-        ctx.body = {
-            success: false,
-            message: error.message,
-        };
+    static getByUserGroup(ctx, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { app_group_user_id } = ctx.params;
+            const { route } = ctx.query;
+            const routeModul = !route
+                ? undefined
+                : "/" + route.split("/").filter((val) => val !== "")[0];
+            const result = yield prisma.appAccessMenu.findMany({
+                include: {
+                    app_group_user: true,
+                    app_menu: {
+                        include: { menu_childrens: true },
+                    },
+                    app_modul: true,
+                },
+                where: {
+                    app_group_user_id: +(app_group_user_id !== null && app_group_user_id !== void 0 ? app_group_user_id : 0),
+                    app_modul: { pattern: routeModul },
+                },
+                orderBy: {
+                    app_menu: { order: "asc" },
+                },
+            });
+            return (ctx.body = { success: true, data: result });
+        });
     }
-}));
-exports.default = AccessMenuRouter;
+    static create(ctx, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { app_group_user_id = 0, access_menu = [], } = JSON.parse(JSON.stringify(ctx.request.body));
+                const removeAll = yield prisma.appAccessMenu.deleteMany({
+                    where: {
+                        app_group_user_id: +app_group_user_id,
+                    },
+                });
+                const data = access_menu
+                    .map((val) => {
+                    var _a, _b, _c;
+                    return {
+                        app_group_user_id: +app_group_user_id,
+                        app_menu_id: +((_a = val.app_menu_id) !== null && _a !== void 0 ? _a : 0),
+                        app_modul_id: +((_b = val.app_modul_id) !== null && _b !== void 0 ? _b : 0),
+                        allowed_access: (_c = val.allowed_access) !== null && _c !== void 0 ? _c : [],
+                    };
+                })
+                    .filter((val) => val.allowed_access.length != 0);
+                const result = yield prisma.appAccessMenu.createMany({
+                    data: data,
+                });
+                return (ctx.body = {
+                    success: true,
+                    data: result,
+                    message: "Berhasil membuat access menu",
+                });
+            }
+            catch (error) {
+                ctx.status = error.statusCode || error.status || 500;
+                return (ctx.body = {
+                    success: false,
+                    message: error.message,
+                });
+            }
+        });
+    }
+}
+exports.SettingAccessMenuController = SettingAccessMenuController;

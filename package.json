@@ -1,8 +1,8 @@
 {
     "scripts": {
-        "convert-tojs": "npx tsc",
+        "convert-tojs": "npx tsc --watch",
         "watch:koa": "npx nodemon app.ts",
-        "start": "npm run watch:koa",
+        "start": "concurrently \"npm run watch:koa\" \"npm run convert-tojs\"",
         "prisma:build": "npm run prisma:migrate && npm run prisma:generate && npm run prisma:format",
         "prisma:build-seeder": "npm run prisma:migrate && npm run prisma:seeder && npm run prisma:generate && npm run prisma:format",
         "prisma:migrate": "npx prisma migrate dev --name init",
@@ -30,6 +30,7 @@
         "@types/koa-static": "^4.0.2",
         "@types/uuid": "^8.3.4",
         "bcrypt": "^5.0.1",
+        "concurrently": "^7.5.0",
         "dotenv": "^16.0.3",
         "fastest-validator": "^1.15.0",
         "koa": "^2.13.4",
