@@ -72,7 +72,7 @@ class CVPreviewController {
                 });
                 /// false = testing (you can see browser is open on your face) , true = production
                 const browser = yield puppeteer_1.default.launch({
-                    headless: false,
+                    headless: true,
                 });
                 const page = yield browser.newPage();
                 /// Login first before generate PDF
@@ -94,18 +94,24 @@ class CVPreviewController {
                 console.log({ url });
                 yield page.goto(url, { waitUntil: "networkidle0" });
                 (0, fs_1.mkdirSync)(dirUploadPDF, { recursive: true });
+                const filename = `${user.username}.pdf`;
                 yield page.pdf({
                     format: "A4",
                     margin: { bottom: 8, top: 8, left: 8, right: 8 },
                     printBackground: true,
-                    path: `${dirUploadPDF}/${user.username}.pdf`,
+                    path: `${dirUploadPDF}/${filename}`,
                 });
                 yield browser.close();
+                const baseDir = `template/pdf/output`;
+                const urlDownload = `${ctx.origin}/${baseDir}/${filename}`;
                 ctx.status = 200;
                 ctx.body = {
                     success: true,
                     message: "Berhasil generate PDF",
-                    data: user,
+                    data: {
+                        url_download: urlDownload,
+                        filename: filename,
+                    },
                 };
             }
             catch (error) {
