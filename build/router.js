@@ -1,9 +1,19 @@
 "use strict";
 // app.use(KoaCompose([LoginRouter.routes(), LoginRouter.allowedMethods()]));
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const koa_passport_1 = __importDefault(require("koa-passport"));
 const koa_router_1 = __importDefault(require("koa-router"));
 const education_1 = require("./routes/cv/education");
 const experience_1 = require("./routes/cv/experience");
@@ -24,9 +34,6 @@ const user_1 = require("./routes/setting/user");
 const user_group_1 = require("./routes/setting/user_group");
 const user_2 = require("./routes/v1/user");
 const router = new koa_router_1.default({});
-const prefixCV = "/cv";
-const prefixSetting = "/setting";
-const prefixV1 = "/v1";
 //! Authentication
 router.post(`/login`, login_1.LoginController.login);
 //! Setting Section
@@ -89,4 +96,35 @@ router.post(`/cv/preview/generate_pdf/:user_id`, preview_1.CVPreviewController.g
 router.get(`/cv/contact/:users_id`, preview_1.CVPreviewController.getPdfPreview);
 //! V1 Section
 router.get(`/v1/user/:username`, user_2.V1UserController.getByUsername);
+//! Experimental
+router.get("/v1/google/signin/failed", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
+    ctx.status = 403;
+    ctx.body = {
+        error: true,
+        message: "Login Failure",
+    };
+}));
+router.get("/v1/google/signin/success", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!ctx.isAuthenticated) {
+        ctx.status = 403;
+        return (ctx.body = {
+            error: true,
+            message: "Not Authorized",
+        });
+    }
+    ctx.status = 200;
+    return (ctx.body = {
+        error: false,
+        message: "Login Success",
+    });
+}));
+router.get("/v1/google/signin", koa_passport_1.default.authenticate("google", {
+    successRedirect: process.env.GOOGLE_OAUTH_SUCCESSREDIRECT,
+    failureRedirect: process.env.GOOGLE_OAUTH_FAILEDREDIRECT,
+}));
+router.get("/v1/logout", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    ctx.logOut();
+    ctx.redirect((_a = process.env.GOOGLE_OAUTH_SUCCESSREDIRECT) !== null && _a !== void 0 ? _a : "");
+}));
 exports.default = router;

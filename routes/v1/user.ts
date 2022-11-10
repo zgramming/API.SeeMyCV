@@ -31,9 +31,13 @@ export class V1UserController {
         ctx.throw(404, new Error("User tidak ditemukan"));
       }
 
+      const codeUserGroup = "user";
       const result = await prisma.users.findFirstOrThrow({
-        where: {
+        where: {          
           username: username,
+          app_group_user: {
+            code: codeUserGroup,
+          },
         },
         include: {
           CVSkill: {

@@ -1,5 +1,6 @@
 // app.use(KoaCompose([LoginRouter.routes(), LoginRouter.allowedMethods()]));
 
+import passport from "koa-passport";
 import Router from "koa-router";
 
 import { CVEducationController } from "./routes/cv/education";
@@ -22,9 +23,6 @@ import { SettingUserGroupController } from "./routes/setting/user_group";
 import { V1UserController } from "./routes/v1/user";
 
 const router = new Router({});
-const prefixCV = "/cv";
-const prefixSetting = "/setting";
-const prefixV1 = "/v1";
 
 //! Authentication
 router.post(`/login`, LoginController.login);
@@ -134,5 +132,44 @@ router.get(`/cv/contact/:users_id`, CVPreviewController.getPdfPreview);
 
 //! V1 Section
 router.get(`/v1/user/:username`, V1UserController.getByUsername);
+
+//! Experimental
+
+router.get("/v1/google/signin/failed", async (ctx, next) => {
+  ctx.status = 403;
+  ctx.body = {
+    error: true,
+    message: "Login Failure",
+  };
+});
+
+router.get("/v1/google/signin/success", async (ctx, next) => {
+  if (!ctx.isAuthenticated) {
+    ctx.status = 403;
+    return (ctx.body = {
+      error: true,
+      message: "Not Authorized",
+    });
+  }
+
+  ctx.status = 200;
+  return (ctx.body = {
+    error: false,
+    message: "Login Success",
+  });
+});
+
+router.get(
+  "/v1/google/signin",
+  passport.authenticate("google", {
+    successRedirect: process.env.GOOGLE_OAUTH_SUCCESSREDIRECT,
+    failureRedirect: process.env.GOOGLE_OAUTH_FAILEDREDIRECT,
+  })
+);
+
+router.get("/v1/logout", async (ctx, next) => {
+  ctx.logOut();
+  ctx.redirect(process.env.GOOGLE_OAUTH_SUCCESSREDIRECT ?? "");
+});
 
 export default router;

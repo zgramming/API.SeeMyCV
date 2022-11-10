@@ -39,9 +39,13 @@ class V1UserController {
                     ctx.status = 404;
                     ctx.throw(404, new Error("User tidak ditemukan"));
                 }
+                const codeUserGroup = "user";
                 const result = yield prisma.users.findFirstOrThrow({
                     where: {
                         username: username,
+                        app_group_user: {
+                            code: codeUserGroup,
+                        },
                     },
                     include: {
                         CVSkill: {
