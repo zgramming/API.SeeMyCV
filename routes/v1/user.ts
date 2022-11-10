@@ -33,7 +33,7 @@ export class V1UserController {
 
       const codeUserGroup = "user";
       const result = await prisma.users.findFirstOrThrow({
-        where: {          
+        where: {
           username: username,
           app_group_user: {
             code: codeUserGroup,

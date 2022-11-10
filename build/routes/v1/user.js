@@ -75,6 +75,7 @@ class V1UserController {
                         CVPortfolio: true,
                     },
                 });
+                console.log({ result });
                 const profile = result.CVProfile;
                 if (profile) {
                     if (profile.image && profile.image !== "") {
