@@ -188,12 +188,14 @@ model MasterData {
   created_by Int?
   updated_by Int?
 
-  master_category      MasterCategory  @relation(fields: [master_category_id], references: [id], onDelete: Cascade)
-  master_data_parent   MasterData?     @relation(name: "master_data", fields: [master_data_id], references: [id], onDelete: Cascade)
-  master_data_children MasterData[]    @relation(name: "master_data")
+  master_category      MasterCategory      @relation(fields: [master_category_id], references: [id], onDelete: Cascade)
+  master_data_parent   MasterData?         @relation(name: "master_data", fields: [master_data_id], references: [id], onDelete: Cascade)
+  master_data_children MasterData[]        @relation(name: "master_data")
   jobs_documentation   Documentation[]
   cv_skill             CVSkill[]
   cv_preview           CVPreview[]
+  cv_template_website  CVTemplateWebsite[]
+  cv_template_pdf      CVTemplatePDF[]
 
   @@map("master_data")
 }
@@ -237,6 +239,8 @@ model Users {
   CVLicenseCertificate CVLicenseCertificate[]
   CVPreview            CVPreview[]
   CVContact            CVContact[]
+  CVTemplateWebsite    CVTemplateWebsite?
+  CVTemplatePDF        CVTemplatePDF?
 
   @@map("users")
 }
@@ -418,4 +422,34 @@ model CVSkill {
   level MasterData @relation(fields: [level_id], references: [id], onDelete: Cascade)
 
   @@map("cv_skill")
+}
+
+model CVTemplatePDF {
+  id              String   @id @default(uuid())
+  users_id        Int      @unique
+  template_pdf_id Int
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  created_by      Int?
+  updated_by      Int?
+
+  template_pdf MasterData @relation(fields: [template_pdf_id], references: [id])
+  user         Users      @relation(fields: [users_id], references: [id], onDelete: Cascade)
+
+  @@map("cv_template_pdf")
+}
+
+model CVTemplateWebsite {
+  id                  String   @id @default(uuid())
+  users_id            Int      @unique
+  template_website_id Int
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+  created_by          Int?
+  updated_by          Int?
+
+  template_website MasterData @relation(fields: [template_website_id], references: [id])
+  user             Users      @relation(fields: [users_id], references: [id], onDelete: Cascade)
+
+  @@map("cv_template_website")
 }

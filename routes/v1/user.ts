@@ -65,6 +65,8 @@ export class V1UserController {
           },
           CVProfile: true,
           CVPortfolio: true,
+          CVTemplateWebsite: { include: { template_website: true } },
+          CVTemplatePDF: { include: { template_pdf: true } },
         },
       });
 

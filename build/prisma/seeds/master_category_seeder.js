@@ -16,6 +16,7 @@ const MasterCategorySeeder = () => __awaiter(void 0, void 0, void 0, function* (
     const data = [
         { code: "LEVEL_SKILL", name: "Level Skill" },
         { code: "KODE_TEMPLATE_WEB", name: "Kode Template Website" },
+        { code: "KODE_TEMPLATE_PDF", name: "Kode Template PDF" },
     ];
     yield prisma.masterCategory.createMany({ data: data });
 });
