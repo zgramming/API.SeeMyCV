@@ -16,6 +16,7 @@ const baseUrlImagesExperience = "images/cv/experience";
 const baseUrlImagesEducation = "images/cv/education";
 const baseUrlImagesPortfolio = "images/cv/portfolio";
 const validator = new Validator();
+
 export class V1UserController {
   public static async getByUsername(ctx: ParameterizedContext, next: Next) {
     try {
