@@ -21,7 +21,7 @@ app.keys = [(_a = process.env.KOA_SESSION_SECRET) !== null && _a !== void 0 ? _a
 app.use((0, koa_session_1.default)({}, app));
 app.use(koa_passport_1.default.initialize());
 app.use(koa_passport_1.default.session());
-app.use((0, koa_body_1.default)({ multipart: true }));
+app.use((0, koa_body_1.default)({ multipart: true, formLimit: 10000, textLimit: 10000 }));
 app.use((0, cors_1.default)());
 app.use((0, koa_json_1.default)());
 app.use((0, koa_logger_1.default)());

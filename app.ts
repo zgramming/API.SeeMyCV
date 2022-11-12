@@ -21,7 +21,7 @@ app.use(session({}, app));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(KoaBody({ multipart: true }));
+app.use(KoaBody({ multipart: true, formLimit: 10000, textLimit: 10000 }));
 
 app.use(cors());
 app.use(Json());
