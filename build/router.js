@@ -15,6 +15,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const koa_passport_1 = __importDefault(require("koa-passport"));
 const koa_router_1 = __importDefault(require("koa-router"));
+const contact_1 = require("./routes/cv/contact");
 const education_1 = require("./routes/cv/education");
 const experience_1 = require("./routes/cv/experience");
 const license_certificate_1 = require("./routes/cv/license_certificate");
@@ -78,26 +79,26 @@ router.post(`/setting/documentation`, documentation_1.SettingDocumentationContro
 router.put(`/setting/documentation/:id`, documentation_1.SettingDocumentationController.update);
 router.del(`/setting/documentation/:id`, documentation_1.SettingDocumentationController.delete);
 //! CV Section
-router.get(`/cv/profile/:users_id`, profile_1.CVProfileController.get);
+router.get(`/cv/profile/user_id/:users_id`, profile_1.CVProfileController.get);
 router.post(`/cv/profile`, profile_1.CVProfileController.upsert);
-router.get(`/cv/experience/:users_id`, experience_1.CVExperienceController.get);
+router.get(`/cv/experience/user_id/:users_id`, experience_1.CVExperienceController.get);
 router.post(`/cv/experience`, experience_1.CVExperienceController.upsert);
 router.del(`/cv/experience/:id`, experience_1.CVExperienceController.delete);
-router.get(`/cv/education/:users_id`, education_1.CVEducationController.get);
+router.get(`/cv/education/user_id/:users_id`, education_1.CVEducationController.get);
 router.post(`/cv/education`, education_1.CVEducationController.upsert);
 router.del(`/cv/education/:id`, education_1.CVEducationController.delete);
-router.get(`/cv/skill/:users_id`, skill_1.CVSkillController.get);
+router.get(`/cv/skill/user_id/:users_id`, skill_1.CVSkillController.get);
 router.post(`/cv/skill`, skill_1.CVSkillController.upsert);
 router.del(`/cv/skill/:id`, skill_1.CVSkillController.delete);
-router.get(`/cv/license_certificate/:users_id`, license_certificate_1.CVLicenseCertificateController.get);
+router.get(`/cv/license_certificate/user_id/:users_id`, license_certificate_1.CVLicenseCertificateController.get);
 router.post(`/cv/license_certificate`, license_certificate_1.CVLicenseCertificateController.upsert);
 router.del(`/cv/license_certificate/:id`, license_certificate_1.CVLicenseCertificateController.delete);
-router.get(`/cv/portfolio/:users_id`, portfolio_1.CVPortfolioController.get);
+router.get(`/cv/portfolio/user_id/:users_id`, portfolio_1.CVPortfolioController.get);
 router.post(`/cv/portfolio`, portfolio_1.CVPortfolioController.upsert);
 router.del(`/cv/portfolio/:id`, portfolio_1.CVPortfolioController.delete);
-router.get(`/cv/preview/pdf/:user_id`, preview_1.CVPreviewController.getPdfPreview);
-router.post(`/cv/preview/generate_pdf/:user_id`, preview_1.CVPreviewController.generatePDF);
-router.get(`/cv/contact/:users_id`, preview_1.CVPreviewController.getPdfPreview);
+router.get(`/cv/preview/pdf/user_id/:user_id`, preview_1.CVPreviewController.getPdfPreview);
+router.post(`/cv/preview/generate_pdf/user_id/:user_id`, preview_1.CVPreviewController.generatePDF);
+router.get(`/cv/contact/user_id/:users_id`, contact_1.CVContactController.get);
 //! V1 Section
 router.get(`/v1/user/:username`, user_2.V1UserController.getByUsername);
 router.post(`/v1/user/signup`, user_2.V1UserController.signup);
