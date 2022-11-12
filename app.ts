@@ -20,8 +20,14 @@ app.keys = [process.env.KOA_SESSION_SECRET ?? ""];
 app.use(session({}, app));
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use(KoaBody({ multipart: true, formLimit: 10000, textLimit: 10000 }));
+app.use(
+  KoaBody({
+    multipart: true,
+    formLimit: 100000,
+    textLimit: 100000,
+    jsonLimit: 100000,
+  })
+);
 
 app.use(cors());
 app.use(Json());
