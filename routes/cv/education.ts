@@ -1,15 +1,15 @@
 import Validator from "fastest-validator";
-import { existsSync, mkdirSync, renameSync, unlinkSync } from "fs";
-import Router from "koa-router";
+import { existsSync, mkdirSync, readFileSync, renameSync, unlink } from "fs";
+import { Next, ParameterizedContext } from "koa";
 import { parse } from "path";
 import { cwd } from "process";
+import sharp from "sharp";
 import { v4 as uuidV4 } from "uuid";
 
 import { PrismaClient } from "@prisma/client";
 
 import { ERROR_TYPE_VALIDATION } from "../../utils/constant";
 import { validationFile } from "../../utils/function";
-import { ParameterizedContext, Next } from "koa";
 
 const validator = new Validator();
 const prisma = new PrismaClient();
@@ -99,7 +99,7 @@ export class CVEducationController {
         const validateFile = validationFile({
           file: file,
           allowedMimetype: ["png", "jpeg", "jpg"],
-          limitSizeMB: 1,
+          limitSizeMB: 5,
           onError(message) {
             ctx.status = 400;
             throw new Error(message);
@@ -122,14 +122,27 @@ export class CVEducationController {
 
         const fullname = nameEducationFile + extOri;
 
-        /// Upload image
-        renameSync(file.filepath, `${dirUpload}/${fullname}`);
-
         /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
         /// Maka file yang lama akan dihapus
         if (extOri !== extEducationFile && education?.image) {
-          unlinkSync(dirUpload + "/" + education.image);
+          unlink(dirUpload + "/" + education.image, (err) => {
+            if (err) {
+              console.log({ error_delete_image_education: err });
+            }
+            console.log("success delete iamge education");
+          });
         }
+
+        /// Upload image
+        const fullPath = `${dirUpload}/${fullname}`;
+        renameSync(file.filepath, fullPath);
+
+        const buffer = readFileSync(fullPath);
+        sharp(buffer)
+          .resize(300)
+          .jpeg({ quality: 70 })
+          .png({ quality: 70 })
+          .toFile(fullPath);
 
         /// Adding object into request body
         data.image = fullname;
@@ -184,7 +197,13 @@ export class CVEducationController {
 
       const del = await prisma.cVEducation.delete({ where: { id: exp?.id } });
       const pathImage = dirUpload + `/${del.image}`;
-      if (existsSync(pathImage)) unlinkSync(pathImage);
+      if (existsSync(pathImage))
+        unlink(pathImage, (err) => {
+          if (err) {
+            console.log({ error_delete_image_education: err });
+          }
+          console.log("success delete iamge education");
+        });
 
       ctx.status = 200;
       return (ctx.body = {

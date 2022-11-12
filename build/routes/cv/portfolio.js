@@ -17,6 +17,7 @@ const fastest_validator_1 = __importDefault(require("fastest-validator"));
 const fs_1 = require("fs");
 const path_1 = require("path");
 const process_1 = require("process");
+const sharp_1 = __importDefault(require("sharp"));
 const uuid_1 = require("uuid");
 const client_1 = require("@prisma/client");
 const constant_1 = require("../../utils/constant");
@@ -105,7 +106,7 @@ class CVPortfolioController {
                     const validateFile = (0, function_1.validationFile)({
                         file: file,
                         allowedMimetype: ["png", "jpg", "jpeg"],
-                        limitSizeMB: 1,
+                        limitSizeMB: 5,
                         onError(message) {
                             ctx.status = 400;
                             throw new Error(message);
@@ -117,13 +118,25 @@ class CVPortfolioController {
                         : (0, uuid_1.v4)() + extOri;
                     const { base: basePortfolioFile, name: namePortfolioFile, ext: extPortfolioFile, } = (0, path_1.parse)(filename);
                     const fullname = namePortfolioFile + extOri;
-                    /// Upload image
-                    (0, fs_1.renameSync)(file.filepath, `${dirUpload}/${fullname}`);
                     /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
                     /// Maka file yang lama akan dihapus
                     if (extOri !== extPortfolioFile && (portfolio === null || portfolio === void 0 ? void 0 : portfolio.thumbnail)) {
-                        (0, fs_1.unlinkSync)(dirUpload + "/" + portfolio.thumbnail);
+                        (0, fs_1.unlink)(dirUpload + "/" + portfolio.thumbnail, (err) => {
+                            if (err) {
+                                console.log({ error_delete_image_portfolio: err });
+                            }
+                            console.log("success delete file portfolio");
+                        });
                     }
+                    /// Upload image
+                    const fullPath = `${dirUpload}/${fullname}`;
+                    (0, fs_1.renameSync)(file.filepath, fullPath);
+                    const buffer = (0, fs_1.readFileSync)(fullPath);
+                    (0, sharp_1.default)(buffer)
+                        .resize(400)
+                        .jpeg({ quality: 70 })
+                        .png({ quality: 70 })
+                        .toFile(fullPath);
                     /// Adding object into request body
                     data.thumbnail = fullname;
                 }
@@ -204,7 +217,12 @@ class CVPortfolioController {
                 });
                 const pathFile = dirUpload + `/${del.thumbnail}`;
                 if ((0, fs_1.existsSync)(pathFile))
-                    (0, fs_1.unlinkSync)(pathFile);
+                    (0, fs_1.unlink)(pathFile, (err) => {
+                        if (err) {
+                            console.log({ error_delete_image_portfolio: err });
+                        }
+                        console.log("success delete file portfolio");
+                    });
                 ctx.status = 200;
                 return (ctx.body = {
                     message: `Portofolio dengan id ${del.id} berhasil dihapus`,

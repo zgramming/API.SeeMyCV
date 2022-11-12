@@ -1,8 +1,9 @@
 import Validator from "fastest-validator";
-import { existsSync, mkdirSync, renameSync, unlinkSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, unlink } from "fs";
 import { Next, ParameterizedContext } from "koa";
 import { parse } from "path";
 import { cwd } from "process";
+import sharp from "sharp";
 import { v4 as uuidV4 } from "uuid";
 
 import { PrismaClient } from "@prisma/client";
@@ -120,7 +121,7 @@ export class CVPortfolioController {
         const validateFile = validationFile({
           file: file,
           allowedMimetype: ["png", "jpg", "jpeg"],
-          limitSizeMB: 1,
+          limitSizeMB: 5,
           onError(message) {
             ctx.status = 400;
             throw new Error(message);
@@ -145,14 +146,27 @@ export class CVPortfolioController {
 
         const fullname = namePortfolioFile + extOri;
 
-        /// Upload image
-        renameSync(file.filepath, `${dirUpload}/${fullname}`);
-
         /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
         /// Maka file yang lama akan dihapus
         if (extOri !== extPortfolioFile && portfolio?.thumbnail) {
-          unlinkSync(dirUpload + "/" + portfolio.thumbnail);
+          unlink(dirUpload + "/" + portfolio.thumbnail, (err) => {
+            if (err) {
+              console.log({ error_delete_image_portfolio: err });
+            }
+            console.log("success delete file portfolio");
+          });
         }
+
+        /// Upload image
+        const fullPath = `${dirUpload}/${fullname}`;
+        renameSync(file.filepath, fullPath);
+
+        const buffer = readFileSync(fullPath);
+        sharp(buffer)
+          .resize(400)
+          .jpeg({ quality: 70 })
+          .png({ quality: 70 })
+          .toFile(fullPath);
 
         /// Adding object into request body
         data.thumbnail = fullname;
@@ -243,7 +257,13 @@ export class CVPortfolioController {
       });
 
       const pathFile = dirUpload + `/${del.thumbnail}`;
-      if (existsSync(pathFile)) unlinkSync(pathFile);
+      if (existsSync(pathFile))
+        unlink(pathFile, (err) => {
+          if (err) {
+            console.log({ error_delete_image_portfolio: err });
+          }
+          console.log("success delete file portfolio");
+        });
 
       ctx.status = 200;
       return (ctx.body = {

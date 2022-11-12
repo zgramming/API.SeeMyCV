@@ -17,6 +17,7 @@ const fastest_validator_1 = __importDefault(require("fastest-validator"));
 const fs_1 = require("fs");
 const path_1 = require("path");
 const process_1 = require("process");
+const sharp_1 = __importDefault(require("sharp"));
 const uuid_1 = require("uuid");
 const client_1 = require("@prisma/client");
 const constant_1 = require("../../utils/constant");
@@ -118,7 +119,7 @@ class CVProfileController {
                     const validateFile = (0, function_1.validationFile)({
                         file: file,
                         allowedMimetype: ["png", "jpg", "jpeg"],
-                        limitSizeMB: 0.5,
+                        limitSizeMB: 5,
                         onError(message) {
                             ctx.status = 400;
                             throw new Error(message);
@@ -132,11 +133,17 @@ class CVProfileController {
                     tempPathFile.push({
                         oldpath: file.filepath,
                         newPath: `${dirUploadImage}/${fullname}`,
+                        code: "image",
                     });
                     /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
                     /// Maka file yang lama akan dihapus
                     if (extOri !== extProfileFile && (profile === null || profile === void 0 ? void 0 : profile.image)) {
-                        (0, fs_1.unlinkSync)(dirUploadImage + "/" + profile.image);
+                        (0, fs_1.unlink)(dirUploadImage + "/" + profile.image, (err) => {
+                            if (err) {
+                                console.log({ error_delete_image: err });
+                            }
+                            console.log("Success delete image");
+                        });
                     }
                     /// Adding object into request body
                     data.image = fullname;
@@ -147,7 +154,7 @@ class CVProfileController {
                     const validateFile = (0, function_1.validationFile)({
                         file: file,
                         allowedMimetype: ["png", "jpg", "jpeg"],
-                        limitSizeMB: 1,
+                        limitSizeMB: 5,
                         onError(message) {
                             ctx.status = 400;
                             throw new Error(message);
@@ -162,11 +169,17 @@ class CVProfileController {
                     tempPathFile.push({
                         oldpath: file.filepath,
                         newPath: `${dirUploadImage}/${fullname}`,
+                        code: "banner",
                     });
                     /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
                     /// Maka file yang lama akan dihapus
                     if (extOri !== extProfileFile && (profile === null || profile === void 0 ? void 0 : profile.banner_image)) {
-                        (0, fs_1.unlinkSync)(dirUploadImage + "/" + profile.banner_image);
+                        (0, fs_1.unlink)(dirUploadImage + "/" + profile.banner_image, (err) => {
+                            if (err) {
+                                console.log({ error_delete_image: err });
+                            }
+                            console.log("success delete image");
+                        });
                     }
                     /// Adding object into request body
                     data.banner_image = fullname;
@@ -177,7 +190,7 @@ class CVProfileController {
                     const validateFile = (0, function_1.validationFile)({
                         file: file,
                         allowedMimetype: ["pdf"],
-                        limitSizeMB: 0.5,
+                        limitSizeMB: 1,
                         onError(message) {
                             ctx.status = 400;
                             throw new Error(message);
@@ -192,11 +205,17 @@ class CVProfileController {
                     tempPathFile.push({
                         oldpath: file.filepath,
                         newPath: `${dirUploadFile}/${fullname}`,
+                        code: "pdf",
                     });
                     /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
                     /// Maka file yang lama akan dihapus
                     if (extOri !== extProfileFile && (profile === null || profile === void 0 ? void 0 : profile.latest_resume)) {
-                        (0, fs_1.unlinkSync)(dirUploadFile + "/" + profile.latest_resume);
+                        (0, fs_1.unlink)(dirUploadFile + "/" + profile.latest_resume, (err) => {
+                            if (err) {
+                                console.log({ error_delete_image: err });
+                            }
+                            console.log("success delete image");
+                        });
                     }
                     /// Adding object into request body
                     data.latest_resume = fullname;
@@ -210,6 +229,22 @@ class CVProfileController {
                 /// We assume all validation file already passed & Query SQL too, then we start upload all file
                 tempPathFile.forEach((val, index) => {
                     (0, fs_1.renameSync)(val.oldpath, val.newPath);
+                    if (val.code == "banner") {
+                        const buffer = (0, fs_1.readFileSync)(val.newPath);
+                        (0, sharp_1.default)(buffer)
+                            .resize(800)
+                            .jpeg({ quality: 70 })
+                            .png({ quality: 70 })
+                            .toFile(val.newPath);
+                    }
+                    if (val.code == "image") {
+                        const buffer = (0, fs_1.readFileSync)(val.newPath);
+                        (0, sharp_1.default)(buffer)
+                            .resize(400)
+                            .jpeg({ quality: 70 })
+                            .png({ quality: 70 })
+                            .toFile(val.newPath);
+                    }
                 });
                 return (ctx.body = {
                     success: true,

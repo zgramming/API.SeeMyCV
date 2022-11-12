@@ -17,6 +17,7 @@ const fastest_validator_1 = __importDefault(require("fastest-validator"));
 const fs_1 = require("fs");
 const path_1 = require("path");
 const process_1 = require("process");
+const sharp_1 = __importDefault(require("sharp"));
 const uuid_1 = require("uuid");
 const client_1 = require("@prisma/client");
 const constant_1 = require("../../utils/constant");
@@ -86,7 +87,7 @@ class CVLicenseCertificateController {
                     const validateFile = (0, function_1.validationFile)({
                         file: file,
                         allowedMimetype: ["png", "pdf"],
-                        limitSizeMB: 1,
+                        limitSizeMB: 5,
                         onError(message) {
                             ctx.status = 400;
                             throw new Error(message);
@@ -98,12 +99,26 @@ class CVLicenseCertificateController {
                         : (0, uuid_1.v4)() + extOri;
                     const { base: baseLicenseFile, name: nameLicenseFile, ext: extLicenseFile, } = (0, path_1.parse)(filename);
                     const fullname = nameLicenseFile + extOri;
-                    /// Upload image
-                    (0, fs_1.renameSync)(file.filepath, `${dirUploadFile}/${fullname}`);
                     /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
                     /// Maka file yang lama akan dihapus
                     if (extOri !== extLicenseFile && (licenseCertificate === null || licenseCertificate === void 0 ? void 0 : licenseCertificate.file)) {
-                        (0, fs_1.unlinkSync)(dirUploadFile + "/" + licenseCertificate.file);
+                        (0, fs_1.unlink)(dirUploadFile + "/" + licenseCertificate.file, (err) => {
+                            if (err) {
+                                console.log({ error_delete_image_certificate: err });
+                            }
+                            console.log("success delete file certificate");
+                        });
+                    }
+                    /// Upload image
+                    const fullPath = `${dirUploadFile}/${fullname}`;
+                    (0, fs_1.renameSync)(file.filepath, fullPath);
+                    if (extOri === ".png") {
+                        const buffer = (0, fs_1.readFileSync)(fullPath);
+                        (0, sharp_1.default)(buffer)
+                            .resize(400)
+                            .jpeg({ quality: 70 })
+                            .png({ quality: 70 })
+                            .toFile(fullPath);
                     }
                     /// Adding object into request body
                     data.file = fullname;
@@ -162,7 +177,12 @@ class CVLicenseCertificateController {
                 if (del.file && del.file !== "") {
                     const pathFile = dirUploadFile + `/${del.file}`;
                     if ((0, fs_1.existsSync)(pathFile))
-                        (0, fs_1.unlinkSync)(pathFile);
+                        (0, fs_1.unlink)(pathFile, (err) => {
+                            if (err) {
+                                console.log({ error_delete_image_certificate: err });
+                            }
+                            console.log("success delete file certificate");
+                        });
                 }
                 ctx.status = 200;
                 return (ctx.body = {

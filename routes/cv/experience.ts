@@ -1,15 +1,15 @@
 import Validator from "fastest-validator";
-import { existsSync, mkdirSync, renameSync, unlinkSync } from "fs";
-import Router from "koa-router";
+import { existsSync, mkdirSync, readFileSync, renameSync, unlink } from "fs";
+import { Next, ParameterizedContext } from "koa";
 import { parse } from "path";
 import { cwd } from "process";
+import sharp from "sharp";
 import { v4 as uuidV4 } from "uuid";
 
 import { PrismaClient } from "@prisma/client";
 
 import { ERROR_TYPE_VALIDATION } from "../../utils/constant";
 import { validationFile } from "../../utils/function";
-import { ParameterizedContext, Next } from "koa";
 
 const prisma = new PrismaClient();
 const validator = new Validator();
@@ -109,7 +109,7 @@ export class CVExperienceController {
         const validateFile = validationFile({
           file: file,
           allowedMimetype: ["png", "jpeg", "jpg"],
-          limitSizeMB: 1,
+          limitSizeMB: 5,
           onError(message) {
             ctx.status = 400;
             throw new Error(message);
@@ -134,14 +134,27 @@ export class CVExperienceController {
 
         const fullname = nameExpFile + extOri;
 
-        /// Upload image
-        renameSync(file.filepath, `${dirUpload}/${fullname}`);
-
         /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
         /// Maka file yang lama akan dihapus
         if (extOri !== extExpFile && exp?.image_company) {
-          unlinkSync(dirUpload + "/" + exp.image_company);
+          unlink(dirUpload + "/" + exp.image_company, (err) => {
+            if (err) {
+              console.log({ error_experience: err });
+            }
+            console.log("success delete image experience");
+          });
         }
+
+        /// Upload image
+        const fullPath = `${dirUpload}/${fullname}`;
+        renameSync(file.filepath, fullPath);
+
+        const buffer = readFileSync(fullPath);
+        sharp(buffer)
+          .resize(200)
+          .jpeg({ quality: 70 })
+          .png({ quality: 70 })
+          .toFile(fullPath);
 
         /// Adding object into request body
         data.image_company = fullname;
@@ -194,7 +207,15 @@ export class CVExperienceController {
 
       const del = await prisma.cVExperience.delete({ where: { id: exp?.id } });
       const pathImage = dirUpload + `/${del.image_company}`;
-      if (existsSync(pathImage)) unlinkSync(pathImage);
+      if (existsSync(pathImage)) {
+        unlink(pathImage, (err) => {
+          if (err) {
+            console.log({ error_delete_experience: err });
+          }
+
+          console.log("success delete image experience");
+        });
+      }
 
       ctx.status = 200;
       return (ctx.body = {

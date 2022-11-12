@@ -17,6 +17,7 @@ const fastest_validator_1 = __importDefault(require("fastest-validator"));
 const fs_1 = require("fs");
 const path_1 = require("path");
 const process_1 = require("process");
+const sharp_1 = __importDefault(require("sharp"));
 const uuid_1 = require("uuid");
 const client_1 = require("@prisma/client");
 const constant_1 = require("../../utils/constant");
@@ -91,7 +92,7 @@ class CVExperienceController {
                     const validateFile = (0, function_1.validationFile)({
                         file: file,
                         allowedMimetype: ["png", "jpeg", "jpg"],
-                        limitSizeMB: 1,
+                        limitSizeMB: 5,
                         onError(message) {
                             ctx.status = 400;
                             throw new Error(message);
@@ -103,13 +104,25 @@ class CVExperienceController {
                         : (0, uuid_1.v4)() + extOri;
                     const { base: baseExpFile, name: nameExpFile, ext: extExpFile, } = (0, path_1.parse)(filename);
                     const fullname = nameExpFile + extOri;
-                    /// Upload image
-                    (0, fs_1.renameSync)(file.filepath, `${dirUpload}/${fullname}`);
                     /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
                     /// Maka file yang lama akan dihapus
                     if (extOri !== extExpFile && (exp === null || exp === void 0 ? void 0 : exp.image_company)) {
-                        (0, fs_1.unlinkSync)(dirUpload + "/" + exp.image_company);
+                        (0, fs_1.unlink)(dirUpload + "/" + exp.image_company, (err) => {
+                            if (err) {
+                                console.log({ error_experience: err });
+                            }
+                            console.log("success delete image experience");
+                        });
                     }
+                    /// Upload image
+                    const fullPath = `${dirUpload}/${fullname}`;
+                    (0, fs_1.renameSync)(file.filepath, fullPath);
+                    const buffer = (0, fs_1.readFileSync)(fullPath);
+                    (0, sharp_1.default)(buffer)
+                        .resize(200)
+                        .jpeg({ quality: 70 })
+                        .png({ quality: 70 })
+                        .toFile(fullPath);
                     /// Adding object into request body
                     data.image_company = fullname;
                 }
@@ -159,8 +172,14 @@ class CVExperienceController {
                 }
                 const del = yield prisma.cVExperience.delete({ where: { id: exp === null || exp === void 0 ? void 0 : exp.id } });
                 const pathImage = dirUpload + `/${del.image_company}`;
-                if ((0, fs_1.existsSync)(pathImage))
-                    (0, fs_1.unlinkSync)(pathImage);
+                if ((0, fs_1.existsSync)(pathImage)) {
+                    (0, fs_1.unlink)(pathImage, (err) => {
+                        if (err) {
+                            console.log({ error_delete_experience: err });
+                        }
+                        console.log("success delete image experience");
+                    });
+                }
                 ctx.status = 200;
                 return (ctx.body = {
                     message: `Pengalaman dengan id ${del.id} berhasil dihapus`,

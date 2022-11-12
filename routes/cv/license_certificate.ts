@@ -1,8 +1,9 @@
 import Validator from "fastest-validator";
-import { existsSync, mkdirSync, renameSync, unlinkSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, renameSync, unlink } from "fs";
 import { Next, ParameterizedContext } from "koa";
 import { parse } from "path";
 import { cwd } from "process";
+import sharp from "sharp";
 import { v4 as uuidV4 } from "uuid";
 
 import { PrismaClient } from "@prisma/client";
@@ -101,7 +102,7 @@ export class CVLicenseCertificateController {
         const validateFile = validationFile({
           file: file,
           allowedMimetype: ["png", "pdf"],
-          limitSizeMB: 1,
+          limitSizeMB: 5,
           onError(message) {
             ctx.status = 400;
             throw new Error(message);
@@ -126,13 +127,28 @@ export class CVLicenseCertificateController {
 
         const fullname = nameLicenseFile + extOri;
 
-        /// Upload image
-        renameSync(file.filepath, `${dirUploadFile}/${fullname}`);
-
         /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
         /// Maka file yang lama akan dihapus
         if (extOri !== extLicenseFile && licenseCertificate?.file) {
-          unlinkSync(dirUploadFile + "/" + licenseCertificate.file);
+          unlink(dirUploadFile + "/" + licenseCertificate.file, (err) => {
+            if (err) {
+              console.log({ error_delete_image_certificate: err });
+            }
+            console.log("success delete file certificate");
+          });
+        }
+
+        /// Upload image
+        const fullPath = `${dirUploadFile}/${fullname}`;
+        renameSync(file.filepath, fullPath);
+
+        if (extOri === ".png") {
+          const buffer = readFileSync(fullPath);
+          sharp(buffer)
+            .resize(400)
+            .jpeg({ quality: 70 })
+            .png({ quality: 70 })
+            .toFile(fullPath);
         }
 
         /// Adding object into request body
@@ -194,7 +210,13 @@ export class CVLicenseCertificateController {
 
       if (del.file && del.file !== "") {
         const pathFile = dirUploadFile + `/${del.file}`;
-        if (existsSync(pathFile)) unlinkSync(pathFile);
+        if (existsSync(pathFile))
+          unlink(pathFile, (err) => {
+            if (err) {
+              console.log({ error_delete_image_certificate: err });
+            }
+            console.log("success delete file certificate");
+          });
       }
 
       ctx.status = 200;

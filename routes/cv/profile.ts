@@ -1,8 +1,9 @@
 import Validator from "fastest-validator";
-import { mkdirSync, renameSync, unlinkSync } from "fs";
+import { mkdirSync, readFileSync, renameSync, unlink } from "fs";
 import { Next, ParameterizedContext } from "koa";
 import { parse } from "path";
 import { cwd } from "process";
+import sharp from "sharp";
 import { v4 as uuidV4 } from "uuid";
 
 import { PrismaClient } from "@prisma/client";
@@ -17,6 +18,7 @@ const dirUploadImage = cwd() + "/public/images/cv/profile";
 const dirUploadFile = cwd() + "/public/file/cv/profile";
 const baseUrlImage = "images/cv/profile";
 const baseUrlFile = "file/cv/profile";
+
 export class CVProfileController {
   public static async get(ctx: ParameterizedContext, next: Next) {
     const { users_id } = ctx.params;
@@ -67,6 +69,7 @@ export class CVProfileController {
         address,
       } = ctx.request.body;
       const tempPathFile: Array<{
+        code: "image" | "banner" | "pdf";
         oldpath: string;
         newPath: string;
       }> = [];
@@ -131,7 +134,7 @@ export class CVProfileController {
         const validateFile = validationFile({
           file: file,
           allowedMimetype: ["png", "jpg", "jpeg"],
-          limitSizeMB: 0.5,
+          limitSizeMB: 5,
           onError(message) {
             ctx.status = 400;
             throw new Error(message);
@@ -148,12 +151,18 @@ export class CVProfileController {
         tempPathFile.push({
           oldpath: file.filepath,
           newPath: `${dirUploadImage}/${fullname}`,
+          code: "image",
         });
 
         /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
         /// Maka file yang lama akan dihapus
         if (extOri !== extProfileFile && profile?.image) {
-          unlinkSync(dirUploadImage + "/" + profile.image);
+          unlink(dirUploadImage + "/" + profile.image, (err) => {
+            if (err) {
+              console.log({ error_delete_image: err });
+            }
+            console.log("Success delete image");
+          });
         }
 
         /// Adding object into request body
@@ -166,7 +175,7 @@ export class CVProfileController {
         const validateFile = validationFile({
           file: file,
           allowedMimetype: ["png", "jpg", "jpeg"],
-          limitSizeMB: 1,
+          limitSizeMB: 5,
           onError(message) {
             ctx.status = 400;
             throw new Error(message);
@@ -184,11 +193,19 @@ export class CVProfileController {
         tempPathFile.push({
           oldpath: file.filepath,
           newPath: `${dirUploadImage}/${fullname}`,
+          code: "banner",
         });
+
         /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
         /// Maka file yang lama akan dihapus
         if (extOri !== extProfileFile && profile?.banner_image) {
-          unlinkSync(dirUploadImage + "/" + profile.banner_image);
+          unlink(dirUploadImage + "/" + profile.banner_image, (err) => {
+            if (err) {
+              console.log({ error_delete_image: err });
+            }
+
+            console.log("success delete image");
+          });
         }
 
         /// Adding object into request body
@@ -201,7 +218,7 @@ export class CVProfileController {
         const validateFile = validationFile({
           file: file,
           allowedMimetype: ["pdf"],
-          limitSizeMB: 0.5,
+          limitSizeMB: 1,
           onError(message) {
             ctx.status = 400;
             throw new Error(message);
@@ -219,12 +236,19 @@ export class CVProfileController {
         tempPathFile.push({
           oldpath: file.filepath,
           newPath: `${dirUploadFile}/${fullname}`,
+          code: "pdf",
         });
 
         /// Jika file yang diupload extensionnya berbeda dengan file yang sudah ada
         /// Maka file yang lama akan dihapus
         if (extOri !== extProfileFile && profile?.latest_resume) {
-          unlinkSync(dirUploadFile + "/" + profile.latest_resume);
+          unlink(dirUploadFile + "/" + profile.latest_resume, (err) => {
+            if (err) {
+              console.log({ error_delete_image: err });
+            }
+
+            console.log("success delete image");
+          });
         }
 
         /// Adding object into request body
@@ -242,6 +266,23 @@ export class CVProfileController {
       /// We assume all validation file already passed & Query SQL too, then we start upload all file
       tempPathFile.forEach((val, index) => {
         renameSync(val.oldpath, val.newPath);
+        if (val.code == "banner") {
+          const buffer = readFileSync(val.newPath);
+          sharp(buffer)
+            .resize(800)
+            .jpeg({ quality: 70 })
+            .png({ quality: 70 })
+            .toFile(val.newPath);
+        }
+
+        if (val.code == "image") {
+          const buffer = readFileSync(val.newPath);
+          sharp(buffer)
+            .resize(400)
+            .jpeg({ quality: 70 })
+            .png({ quality: 70 })
+            .toFile(val.newPath);
+        }
       });
 
       return (ctx.body = {
