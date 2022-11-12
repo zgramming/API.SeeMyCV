@@ -57,6 +57,7 @@ class CVProfileController {
         });
     }
     static upsert(ctx, next) {
+        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 (0, fs_1.mkdirSync)(dirUploadImage, { recursive: true });
@@ -79,18 +80,18 @@ class CVProfileController {
                 const data = {
                     motto,
                     description,
-                    phone,
-                    web,
-                    twitter,
-                    facebook,
-                    instagram,
-                    linkedIn,
-                    github,
-                    address,
+                    phone: phone !== null && phone !== void 0 ? phone : null,
+                    web: web !== null && web !== void 0 ? web : null,
+                    twitter: twitter !== null && twitter !== void 0 ? twitter : null,
+                    facebook: facebook !== null && facebook !== void 0 ? facebook : null,
+                    instagram: instagram !== null && instagram !== void 0 ? instagram : null,
+                    linkedIn: linkedIn !== null && linkedIn !== void 0 ? linkedIn : null,
+                    github: github !== null && github !== void 0 ? github : null,
+                    address: address !== null && address !== void 0 ? address : null,
                     users_id: users.id,
-                    image: profile === null || profile === void 0 ? void 0 : profile.image,
-                    banner_image: profile === null || profile === void 0 ? void 0 : profile.banner_image,
-                    latest_resume: profile === null || profile === void 0 ? void 0 : profile.latest_resume,
+                    image: (_a = profile === null || profile === void 0 ? void 0 : profile.image) !== null && _a !== void 0 ? _a : null,
+                    banner_image: (_b = profile === null || profile === void 0 ? void 0 : profile.banner_image) !== null && _b !== void 0 ? _b : null,
+                    latest_resume: (_c = profile === null || profile === void 0 ? void 0 : profile.latest_resume) !== null && _c !== void 0 ? _c : null,
                 };
                 const schema = {
                     users_id: { type: "number" },

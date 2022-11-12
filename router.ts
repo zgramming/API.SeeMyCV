@@ -9,6 +9,7 @@ import { CVLicenseCertificateController } from "./routes/cv/license_certificate"
 import { CVPortfolioController } from "./routes/cv/portfolio";
 import { CVPreviewController } from "./routes/cv/preview";
 import { CVProfileController } from "./routes/cv/profile";
+import { CVSkillController } from "./routes/cv/skill";
 import { SettingAccessMenuController } from "./routes/setting/access_menu";
 import { SettingAccessModulController } from "./routes/setting/access_modul";
 import { SettingDocumentationController } from "./routes/setting/documentation";
@@ -32,7 +33,10 @@ router.post(`/login`, LoginController.login);
 router.get(`/setting/user`, SettingUserController.getUsers);
 router.post(`/setting/user`, SettingUserController.createUsers);
 router.put(`/setting/user/:id`, SettingUserController.updateUsers);
-router.put(`/setting/user/:id`, SettingUserController.updateNameUsers);
+router.put(
+  `/setting/user/update_name/:id`,
+  SettingUserController.updateNameUsers
+);
 router.del(`/setting/user/:id`, SettingUserController.deleteUsers);
 
 router.get(`/setting/user_group`, SettingUserGroupController.getUserGroup);
@@ -108,6 +112,10 @@ router.get(`/cv/education/:users_id`, CVEducationController.get);
 router.post(`/cv/education`, CVEducationController.upsert);
 router.del(`/cv/education/:id`, CVEducationController.delete);
 
+router.get(`/cv/skill/:users_id`, CVSkillController.get);
+router.post(`/cv/skill`, CVSkillController.upsert);
+router.del(`/cv/skill/:id`, CVSkillController.delete);
+
 router.get(
   `/cv/license_certificate/:users_id`,
   CVLicenseCertificateController.get
@@ -132,6 +140,7 @@ router.get(`/cv/contact/:users_id`, CVPreviewController.getPdfPreview);
 
 //! V1 Section
 router.get(`/v1/user/:username`, V1UserController.getByUsername);
+router.post(`/v1/user/signup`, V1UserController.signup);
 
 //! Experimental
 

@@ -64,7 +64,7 @@ export class CVEducationController {
         start_date: new Date(start_date),
         end_date: new Date(end_date),
         is_graduated: +is_graduated ? true : false,
-        image: education?.image,
+        image: education?.image ?? null,
       };
 
       console.log({

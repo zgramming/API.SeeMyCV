@@ -44,6 +44,7 @@ class CVEducationController {
         });
     }
     static upsert(ctx, next) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const createDir = (0, fs_1.mkdirSync)(dirUpload, { recursive: true });
@@ -61,7 +62,7 @@ class CVEducationController {
                     start_date: new Date(start_date),
                     end_date: new Date(end_date),
                     is_graduated: +is_graduated ? true : false,
-                    image: education === null || education === void 0 ? void 0 : education.image,
+                    image: (_a = education === null || education === void 0 ? void 0 : education.image) !== null && _a !== void 0 ? _a : null,
                 };
                 console.log({
                     body: data,

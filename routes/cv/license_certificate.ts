@@ -62,12 +62,12 @@ export class CVLicenseCertificateController {
         users_id: +users_id,
         name,
         publisher,
-        url,
-        credential,
+        url: url ?? null,
+        credential: credential ?? null,
         start_date: new Date(start_date),
         end_date: new Date(end_date),
         is_expired: +is_expired ? true : false,
-        file: licenseCertificate?.file,
+        file: licenseCertificate?.file ?? null,
       };
 
       console.log({

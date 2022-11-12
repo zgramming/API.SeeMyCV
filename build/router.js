@@ -21,6 +21,7 @@ const license_certificate_1 = require("./routes/cv/license_certificate");
 const portfolio_1 = require("./routes/cv/portfolio");
 const preview_1 = require("./routes/cv/preview");
 const profile_1 = require("./routes/cv/profile");
+const skill_1 = require("./routes/cv/skill");
 const access_menu_1 = require("./routes/setting/access_menu");
 const access_modul_1 = require("./routes/setting/access_modul");
 const documentation_1 = require("./routes/setting/documentation");
@@ -40,7 +41,7 @@ router.post(`/login`, login_1.LoginController.login);
 router.get(`/setting/user`, user_1.SettingUserController.getUsers);
 router.post(`/setting/user`, user_1.SettingUserController.createUsers);
 router.put(`/setting/user/:id`, user_1.SettingUserController.updateUsers);
-router.put(`/setting/user/:id`, user_1.SettingUserController.updateNameUsers);
+router.put(`/setting/user/update_name/:id`, user_1.SettingUserController.updateNameUsers);
 router.del(`/setting/user/:id`, user_1.SettingUserController.deleteUsers);
 router.get(`/setting/user_group`, user_group_1.SettingUserGroupController.getUserGroup);
 router.post(`/setting/user_group`, user_group_1.SettingUserGroupController.createUserGroup);
@@ -85,6 +86,9 @@ router.del(`/cv/experience/:id`, experience_1.CVExperienceController.delete);
 router.get(`/cv/education/:users_id`, education_1.CVEducationController.get);
 router.post(`/cv/education`, education_1.CVEducationController.upsert);
 router.del(`/cv/education/:id`, education_1.CVEducationController.delete);
+router.get(`/cv/skill/:users_id`, skill_1.CVSkillController.get);
+router.post(`/cv/skill`, skill_1.CVSkillController.upsert);
+router.del(`/cv/skill/:id`, skill_1.CVSkillController.delete);
 router.get(`/cv/license_certificate/:users_id`, license_certificate_1.CVLicenseCertificateController.get);
 router.post(`/cv/license_certificate`, license_certificate_1.CVLicenseCertificateController.upsert);
 router.del(`/cv/license_certificate/:id`, license_certificate_1.CVLicenseCertificateController.delete);
@@ -96,6 +100,7 @@ router.post(`/cv/preview/generate_pdf/:user_id`, preview_1.CVPreviewController.g
 router.get(`/cv/contact/:users_id`, preview_1.CVPreviewController.getPdfPreview);
 //! V1 Section
 router.get(`/v1/user/:username`, user_2.V1UserController.getByUsername);
+router.post(`/v1/user/signup`, user_2.V1UserController.signup);
 //! Experimental
 router.get("/v1/google/signin/failed", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
     ctx.status = 403;

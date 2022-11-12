@@ -48,6 +48,7 @@ class CVExperienceController {
         });
     }
     static upsert(ctx, next) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const createDir = (0, fs_1.mkdirSync)(dirUpload, { recursive: true });
@@ -62,10 +63,10 @@ class CVExperienceController {
                     job,
                     start_date: new Date(start_date),
                     end_date: new Date(end_date),
-                    description,
+                    description: description !== null && description !== void 0 ? description : null,
                     is_graduated: +is_graduated ? true : false,
-                    tags,
-                    image_company: exp === null || exp === void 0 ? void 0 : exp.image_company,
+                    tags: tags !== null && tags !== void 0 ? tags : null,
+                    image_company: (_a = exp === null || exp === void 0 ? void 0 : exp.image_company) !== null && _a !== void 0 ? _a : null,
                 };
                 console.log({
                     body: data,

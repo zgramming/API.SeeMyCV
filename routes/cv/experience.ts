@@ -68,10 +68,10 @@ export class CVExperienceController {
         job,
         start_date: new Date(start_date),
         end_date: new Date(end_date),
-        description,
+        description: description ?? null,
         is_graduated: +is_graduated ? true : false,
-        tags,
-        image_company: exp?.image_company,
+        tags: tags ?? null,
+        image_company: exp?.image_company ?? null,
       };
 
       console.log({

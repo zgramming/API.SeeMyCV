@@ -186,7 +186,7 @@ export class SettingUserController {
       ctx.status = 200;
       return (ctx.body = {
         success: true,
-        message: "Berhasil mengupdate nama",
+        message: "Berhasil mengupdate nama menjadi " + name,
         data: update,
       });
     } catch (error: any) {

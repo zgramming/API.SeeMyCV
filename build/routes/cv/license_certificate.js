@@ -44,6 +44,7 @@ class CVLicenseCertificateController {
         });
     }
     static upsert(ctx, next) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 (0, fs_1.mkdirSync)(dirUploadFile, { recursive: true });
@@ -57,12 +58,12 @@ class CVLicenseCertificateController {
                     users_id: +users_id,
                     name,
                     publisher,
-                    url,
-                    credential,
+                    url: url !== null && url !== void 0 ? url : null,
+                    credential: credential !== null && credential !== void 0 ? credential : null,
                     start_date: new Date(start_date),
                     end_date: new Date(end_date),
                     is_expired: +is_expired ? true : false,
-                    file: licenseCertificate === null || licenseCertificate === void 0 ? void 0 : licenseCertificate.file,
+                    file: (_a = licenseCertificate === null || licenseCertificate === void 0 ? void 0 : licenseCertificate.file) !== null && _a !== void 0 ? _a : null,
                 };
                 console.log({
                     body: ctx.request.body,
