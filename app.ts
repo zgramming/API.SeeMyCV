@@ -23,9 +23,9 @@ app.use(passport.session());
 app.use(
   KoaBody({
     multipart: true,
-    formLimit: 100000,
-    textLimit: 100000,
-    jsonLimit: 100000,
+    formLimit: 1000000,
+    textLimit: 1000000,
+    jsonLimit: 1000000,
   })
 );
 

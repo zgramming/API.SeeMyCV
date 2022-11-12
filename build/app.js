@@ -23,9 +23,9 @@ app.use(koa_passport_1.default.initialize());
 app.use(koa_passport_1.default.session());
 app.use((0, koa_body_1.default)({
     multipart: true,
-    formLimit: 100000,
-    textLimit: 100000,
-    jsonLimit: 100000,
+    formLimit: 1000000,
+    textLimit: 1000000,
+    jsonLimit: 1000000,
 }));
 app.use((0, cors_1.default)());
 app.use((0, koa_json_1.default)());
