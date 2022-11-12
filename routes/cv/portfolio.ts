@@ -36,6 +36,24 @@ export class CVPortfolioController {
     });
   }
 
+  public static async getById(ctx: ParameterizedContext, next: Next) {
+    const { id } = ctx.params;
+    let res = await prisma.cVPortfolio.findFirstOrThrow({
+      where: { id: id ?? "" },
+      include: {
+        urls: true,
+      },
+    });
+
+    res.thumbnail = `${ctx.origin}/${baseUrlFile}/${res.thumbnail}`;
+
+    ctx.status = 200;
+    return (ctx.body = {
+      success: true,
+      data: res,
+    });
+  }
+
   public static async upsert(ctx: ParameterizedContext, next: Next) {
     try {
       const createDir = mkdirSync(dirUpload, { recursive: true });

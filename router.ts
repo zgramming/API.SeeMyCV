@@ -22,6 +22,7 @@ import { SettingModulController } from "./routes/setting/modul";
 import { SettingParameterController } from "./routes/setting/parameter";
 import { SettingUserController } from "./routes/setting/user";
 import { SettingUserGroupController } from "./routes/setting/user_group";
+import { V1PortfolioController } from "./routes/v1/portfolio";
 import { V1UserController } from "./routes/v1/user";
 
 const router = new Router({});
@@ -127,6 +128,7 @@ router.del(
   CVLicenseCertificateController.delete
 );
 
+router.get(`/cv/portfolio/:id`, CVPortfolioController.getById);
 router.get(`/cv/portfolio/user_id/:users_id`, CVPortfolioController.get);
 router.post(`/cv/portfolio`, CVPortfolioController.upsert);
 router.del(`/cv/portfolio/:id`, CVPortfolioController.delete);
@@ -144,6 +146,10 @@ router.get(`/cv/contact/user_id/:users_id`, CVContactController.get);
 
 //! V1 Section
 router.get(`/v1/user/:username`, V1UserController.getByUsername);
+router.get(
+  `/v1/portfolio/username/:username/slug/:slug`,
+  V1PortfolioController.getByUsernameAndSlug
+);
 router.post(`/v1/user/signup`, V1UserController.signup);
 
 //! Experimental

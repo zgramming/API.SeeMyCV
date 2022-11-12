@@ -43,6 +43,23 @@ class CVPortfolioController {
             });
         });
     }
+    static getById(ctx, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = ctx.params;
+            let res = yield prisma.cVPortfolio.findFirstOrThrow({
+                where: { id: id !== null && id !== void 0 ? id : "" },
+                include: {
+                    urls: true,
+                },
+            });
+            res.thumbnail = `${ctx.origin}/${baseUrlFile}/${res.thumbnail}`;
+            ctx.status = 200;
+            return (ctx.body = {
+                success: true,
+                data: res,
+            });
+        });
+    }
     static upsert(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

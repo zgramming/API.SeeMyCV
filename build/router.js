@@ -34,6 +34,7 @@ const modul_1 = require("./routes/setting/modul");
 const parameter_1 = require("./routes/setting/parameter");
 const user_1 = require("./routes/setting/user");
 const user_group_1 = require("./routes/setting/user_group");
+const portfolio_2 = require("./routes/v1/portfolio");
 const user_2 = require("./routes/v1/user");
 const router = new koa_router_1.default({});
 //! Authentication
@@ -93,6 +94,7 @@ router.del(`/cv/skill/:id`, skill_1.CVSkillController.delete);
 router.get(`/cv/license_certificate/user_id/:users_id`, license_certificate_1.CVLicenseCertificateController.get);
 router.post(`/cv/license_certificate`, license_certificate_1.CVLicenseCertificateController.upsert);
 router.del(`/cv/license_certificate/:id`, license_certificate_1.CVLicenseCertificateController.delete);
+router.get(`/cv/portfolio/:id`, portfolio_1.CVPortfolioController.getById);
 router.get(`/cv/portfolio/user_id/:users_id`, portfolio_1.CVPortfolioController.get);
 router.post(`/cv/portfolio`, portfolio_1.CVPortfolioController.upsert);
 router.del(`/cv/portfolio/:id`, portfolio_1.CVPortfolioController.delete);
@@ -101,6 +103,7 @@ router.post(`/cv/preview/generate_pdf/user_id/:user_id`, preview_1.CVPreviewCont
 router.get(`/cv/contact/user_id/:users_id`, contact_1.CVContactController.get);
 //! V1 Section
 router.get(`/v1/user/:username`, user_2.V1UserController.getByUsername);
+router.get(`/v1/portfolio/username/:username/slug/:slug`, portfolio_2.V1PortfolioController.getByUsernameAndSlug);
 router.post(`/v1/user/signup`, user_2.V1UserController.signup);
 //! Experimental
 router.get("/v1/google/signin/failed", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
