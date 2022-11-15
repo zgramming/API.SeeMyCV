@@ -13,53 +13,126 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CVPreviewController = void 0;
+const fastest_validator_1 = __importDefault(require("fastest-validator"));
 const fs_1 = require("fs");
 const process_1 = require("process");
 const puppeteer_1 = __importDefault(require("puppeteer"));
 const client_1 = require("@prisma/client");
+const constant_1 = require("../../utils/constant");
 const prisma = new client_1.PrismaClient();
+const validator = new fastest_validator_1.default();
 const dirUploadPDF = (0, process_1.cwd)() + "/public/template/pdf/output";
 class CVPreviewController {
-    static getPdfPreview(ctx, next) {
+    static getPreviewPDF(ctx, next) {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
-            const { user_id } = ctx.params;
-            const result = yield prisma.users.findFirstOrThrow({
-                where: {
-                    id: +user_id,
-                },
-                include: {
-                    CVSkill: {
-                        include: { level: true },
-                        orderBy: {
-                            level: {
-                                order: "desc",
+            try {
+                const { user_id } = ctx.params;
+                const result = yield prisma.cVTemplatePDF.findFirst({
+                    where: {
+                        users_id: +user_id,
+                    },
+                    include: {
+                        template_pdf: true,
+                    },
+                });
+                ctx.status = 200;
+                return (ctx.body = {
+                    success: true,
+                    data: result,
+                });
+            }
+            catch (error) {
+                console.log({ error: error });
+                ctx.status = (_a = error.code) !== null && _a !== void 0 ? _a : 500;
+                return (ctx.body = {
+                    success: false,
+                    message: (_b = error === null || error === void 0 ? void 0 : error.message) !== null && _b !== void 0 ? _b : "Unknown Message Error",
+                });
+            }
+        });
+    }
+    static getPreviewWebsite(ctx, next) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { user_id } = ctx.params;
+                const result = yield prisma.cVTemplateWebsite.findFirst({
+                    where: {
+                        users_id: +user_id,
+                    },
+                    include: {
+                        template_website: true,
+                    },
+                });
+                ctx.status = 200;
+                return (ctx.body = {
+                    success: true,
+                    data: result,
+                });
+            }
+            catch (error) {
+                console.log({ error: error });
+                ctx.status = (_a = error.code) !== null && _a !== void 0 ? _a : 500;
+                return (ctx.body = {
+                    success: false,
+                    message: (_b = error === null || error === void 0 ? void 0 : error.message) !== null && _b !== void 0 ? _b : "Unknown Message Error",
+                });
+            }
+        });
+    }
+    static getDetailPreviewPDF(ctx, next) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { user_id } = ctx.params;
+                const result = yield prisma.users.findFirstOrThrow({
+                    where: {
+                        id: +user_id,
+                    },
+                    include: {
+                        CVSkill: {
+                            include: { level: true },
+                            orderBy: {
+                                level: {
+                                    order: "desc",
+                                },
                             },
                         },
-                    },
-                    CVExperience: {
-                        orderBy: {
-                            start_date: "desc",
+                        CVExperience: {
+                            orderBy: {
+                                start_date: "desc",
+                            },
                         },
-                    },
-                    CVEducation: {
-                        orderBy: {
-                            start_date: "desc",
+                        CVEducation: {
+                            orderBy: {
+                                start_date: "desc",
+                            },
                         },
-                    },
-                    CVLicenseCertificate: {
-                        orderBy: {
-                            start_date: "desc",
+                        CVLicenseCertificate: {
+                            orderBy: {
+                                start_date: "desc",
+                            },
                         },
+                        CVProfile: true,
+                        CVPortfolio: true,
                     },
-                    CVProfile: true,
-                    CVPortfolio: true,
-                },
-            });
-            ctx.status = 200;
-            return (ctx.body = {
-                message: "Berhasil mendapatkan data preview",
-                data: result,
-            });
+                });
+                ctx.status = 200;
+                return (ctx.body = {
+                    message: "Berhasil mendapatkan data preview",
+                    data: result,
+                });
+            }
+            catch (error) {
+                console.log({ error: error });
+                ctx.status = (_a = error.code) !== null && _a !== void 0 ? _a : 500;
+                return (ctx.body = {
+                    success: false,
+                    message: (_b = error === null || error === void 0 ? void 0 : error.message) !== null && _b !== void 0 ? _b : "Unknown Message Error",
+                    data: null,
+                });
+            }
         });
     }
     static generatePDF(ctx, next) {
@@ -122,6 +195,110 @@ class CVPreviewController {
                     success: false,
                     message: error.message,
                 };
+            }
+        });
+    }
+    static saveWebsite(ctx, next) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { user_id, template_website_id } = ctx.request.body;
+                const user = yield prisma.users.findFirstOrThrow({
+                    where: { id: +user_id },
+                });
+                const schema = {
+                    user_id: { type: "number" },
+                    template_website_id: { type: "number", optional: true },
+                };
+                const createSchema = validator.compile(schema);
+                const check = yield createSchema({
+                    user_id: user.id,
+                    template_website_id,
+                });
+                if (check !== true) {
+                    ctx.status = 400;
+                    return (ctx.body = {
+                        success: false,
+                        type: constant_1.ERROR_TYPE_VALIDATION,
+                        message: check,
+                    });
+                }
+                const data = {
+                    users_id: +user_id,
+                    template_website_id: template_website_id ? template_website_id : null,
+                };
+                const upsert = yield prisma.cVTemplateWebsite.upsert({
+                    where: {
+                        users_id: user.id,
+                    },
+                    create: data,
+                    update: data,
+                });
+                ctx.status = 200;
+                return (ctx.body = {
+                    message: "Berhasil mengupdate template Website",
+                    data: upsert,
+                });
+            }
+            catch (error) {
+                console.log({ error: error });
+                ctx.status = (_a = error.code) !== null && _a !== void 0 ? _a : 500;
+                return (ctx.body = {
+                    success: false,
+                    message: (_b = error === null || error === void 0 ? void 0 : error.message) !== null && _b !== void 0 ? _b : "Unknown Message Error",
+                });
+            }
+        });
+    }
+    static savePDF(ctx, next) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id, user_id, template_pdf_id } = ctx.request.body;
+                const user = yield prisma.users.findFirstOrThrow({
+                    where: { id: +user_id },
+                });
+                const schema = {
+                    user_id: { type: "number" },
+                    template_website_id: { type: "number", optional: true },
+                };
+                const createSchema = validator.compile(schema);
+                const check = yield createSchema({
+                    user_id: user.id,
+                    template_pdf_id,
+                });
+                if (check !== true) {
+                    ctx.status = 400;
+                    return (ctx.body = {
+                        success: false,
+                        type: constant_1.ERROR_TYPE_VALIDATION,
+                        message: check,
+                    });
+                }
+                const data = {
+                    users_id: +user_id,
+                    template_pdf_id,
+                };
+                const upsert = yield prisma.cVTemplatePDF.upsert({
+                    where: {
+                        users_id: user.id,
+                    },
+                    create: data,
+                    update: data,
+                });
+                ctx.status = 200;
+                return (ctx.body = {
+                    message: "Berhasil mengupdate template PDF",
+                    // data: upsert,
+                });
+            }
+            catch (error) {
+                console.log({ error: error });
+                ctx.status = (_a = error.code) !== null && _a !== void 0 ? _a : 500;
+                return (ctx.body = {
+                    success: false,
+                    message: (_b = error === null || error === void 0 ? void 0 : error.message) !== null && _b !== void 0 ? _b : "Unknown Message Error",
+                });
             }
         });
     }

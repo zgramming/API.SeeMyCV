@@ -1,54 +1,124 @@
+import Validator from "fastest-validator";
 import { mkdirSync } from "fs";
 import { Next, ParameterizedContext } from "koa";
 import { cwd } from "process";
 import puppeteer from "puppeteer";
 
 import { PrismaClient } from "@prisma/client";
+import { ERROR_TYPE_VALIDATION } from "../../utils/constant";
 
 const prisma = new PrismaClient();
+const validator = new Validator();
 const dirUploadPDF = cwd() + "/public/template/pdf/output";
 
 export class CVPreviewController {
-  public static async getPdfPreview(ctx: ParameterizedContext, next: Next) {
-    const { user_id } = ctx.params;
-    const result = await prisma.users.findFirstOrThrow({
-      where: {
-        id: +user_id,
-      },
-      include: {
-        CVSkill: {
-          include: { level: true },
-          orderBy: {
-            level: {
-              order: "desc",
+  public static async getPreviewPDF(ctx: ParameterizedContext, next: Next) {
+    try {
+      const { user_id } = ctx.params;
+      const result = await prisma.cVTemplatePDF.findFirst({
+        where: {
+          users_id: +user_id,
+        },
+        include: {
+          template_pdf: true,
+        },
+      });
+
+      ctx.status = 200;
+      return (ctx.body = {
+        success: true,
+        data: result,
+      });
+    } catch (error: any) {
+      console.log({ error: error });
+      ctx.status = error.code ?? 500;
+      return (ctx.body = {
+        success: false,
+        message: error?.message ?? "Unknown Message Error",
+      });
+    }
+  }
+
+  public static async getPreviewWebsite(ctx: ParameterizedContext, next: Next) {
+    try {
+      const { user_id } = ctx.params;
+      const result = await prisma.cVTemplateWebsite.findFirst({
+        where: {
+          users_id: +user_id,
+        },
+        include: {
+          template_website: true,
+        },
+      });
+
+      ctx.status = 200;
+      return (ctx.body = {
+        success: true,
+        data: result,
+      });
+    } catch (error: any) {
+      console.log({ error: error });
+      ctx.status = error.code ?? 500;
+      return (ctx.body = {
+        success: false,
+        message: error?.message ?? "Unknown Message Error",
+      });
+    }
+  }
+
+  public static async getDetailPreviewPDF(
+    ctx: ParameterizedContext,
+    next: Next
+  ) {
+    try {
+      const { user_id } = ctx.params;
+      const result = await prisma.users.findFirstOrThrow({
+        where: {
+          id: +user_id,
+        },
+        include: {
+          CVSkill: {
+            include: { level: true },
+            orderBy: {
+              level: {
+                order: "desc",
+              },
             },
           },
-        },
-        CVExperience: {
-          orderBy: {
-            start_date: "desc",
+          CVExperience: {
+            orderBy: {
+              start_date: "desc",
+            },
           },
-        },
-        CVEducation: {
-          orderBy: {
-            start_date: "desc",
+          CVEducation: {
+            orderBy: {
+              start_date: "desc",
+            },
           },
-        },
-        CVLicenseCertificate: {
-          orderBy: {
-            start_date: "desc",
+          CVLicenseCertificate: {
+            orderBy: {
+              start_date: "desc",
+            },
           },
+          CVProfile: true,
+          CVPortfolio: true,
         },
-        CVProfile: true,
-        CVPortfolio: true,
-      },
-    });
+      });
 
-    ctx.status = 200;
-    return (ctx.body = {
-      message: "Berhasil mendapatkan data preview",
-      data: result,
-    });
+      ctx.status = 200;
+      return (ctx.body = {
+        message: "Berhasil mendapatkan data preview",
+        data: result,
+      });
+    } catch (error: any) {
+      console.log({ error: error });
+      ctx.status = error.code ?? 500;
+      return (ctx.body = {
+        success: false,
+        message: error?.message ?? "Unknown Message Error",
+        data: null,
+      });
+    }
   }
 
   public static async generatePDF(ctx: ParameterizedContext, next: Next) {
@@ -123,6 +193,116 @@ export class CVPreviewController {
         success: false,
         message: error.message,
       };
+    }
+  }
+
+  public static async saveWebsite(ctx: ParameterizedContext, next: Next) {
+    try {
+      const { user_id, template_website_id } = ctx.request.body;
+      const user = await prisma.users.findFirstOrThrow({
+        where: { id: +user_id },
+      });
+
+      const schema = {
+        user_id: { type: "number" },
+        template_website_id: { type: "number", optional: true },
+      };
+
+      const createSchema = validator.compile(schema);
+      const check = await createSchema({
+        user_id: user.id,
+        template_website_id,
+      });
+
+      if (check !== true) {
+        ctx.status = 400;
+        return (ctx.body = {
+          success: false,
+          type: ERROR_TYPE_VALIDATION,
+          message: check,
+        });
+      }
+
+      const data = {
+        users_id: +user_id,
+        template_website_id: template_website_id ? template_website_id : null,
+      };
+
+      const upsert = await prisma.cVTemplateWebsite.upsert({
+        where: {
+          users_id: user.id,
+        },
+        create: data,
+        update: data,
+      });
+
+      ctx.status = 200;
+      return (ctx.body = {
+        message: "Berhasil mengupdate template Website",
+        data: upsert,
+      });
+    } catch (error: any) {
+      console.log({ error: error });
+      ctx.status = error.code ?? 500;
+      return (ctx.body = {
+        success: false,
+        message: error?.message ?? "Unknown Message Error",
+      });
+    }
+  }
+
+  public static async savePDF(ctx: ParameterizedContext, next: Next) {
+    try {
+      const { id, user_id, template_pdf_id } = ctx.request.body;
+      const user = await prisma.users.findFirstOrThrow({
+        where: { id: +user_id },
+      });
+
+      const schema = {
+        user_id: { type: "number" },
+        template_website_id: { type: "number", optional: true },
+      };
+
+      const createSchema = validator.compile(schema);
+      const check = await createSchema({
+        user_id: user.id,
+        template_pdf_id,
+      });
+
+      if (check !== true) {
+        ctx.status = 400;
+        return (ctx.body = {
+          success: false,
+          type: ERROR_TYPE_VALIDATION,
+          message: check,
+        });
+      }
+
+      const data = {
+        users_id: +user_id,
+        template_pdf_id,
+      };
+
+      const upsert = await prisma.cVTemplatePDF.upsert({
+        where: {
+          users_id: user.id,
+        },
+        create: data,
+        update: data,
+      });
+
+      ctx.status = 200;
+      return (ctx.body = {
+        message: "Berhasil mengupdate template PDF",
+        // data: upsert,
+      });
+    } catch (error: any) {
+      console.log({ error: error });
+      ctx.status = error.code ?? 500;
+      return (ctx.body = {
+        success: false,
+        message: error?.message ?? "Unknown Message Error",
+      });
     }
   }
 }

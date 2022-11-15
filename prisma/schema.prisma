@@ -24,11 +24,16 @@ enum UserStatus {
   process_verification
 }
 
+enum CommonStatus {
+  active
+  inactive
+}
+
 model AppGroupUser {
-  id     Int    @id @default(autoincrement())
-  code   String @unique @db.VarChar(50)
-  name   String @db.VarChar(100)
-  status String @default("active")
+  id     Int          @id @default(autoincrement())
+  code   String       @unique @db.VarChar(50)
+  name   String       @db.VarChar(100)
+  status CommonStatus @default(active)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -62,15 +67,15 @@ model AppAccessMenu {
 }
 
 model AppMenu {
-  id                 Int     @id @default(autoincrement())
+  id                 Int          @id @default(autoincrement())
   app_modul_id       Int
   app_menu_id_parent Int?
-  code               String  @db.VarChar(50)
-  name               String  @db.VarChar(100)
-  route              String  @db.VarChar(100)
-  order              Int     @default(0)
+  code               String       @db.VarChar(50)
+  name               String       @db.VarChar(100)
+  route              String       @db.VarChar(100)
+  order              Int          @default(0)
   icon               String?
-  status             String  @default("active")
+  status             CommonStatus @default(active)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -102,13 +107,13 @@ model AppAccessModul {
 }
 
 model AppModul {
-  id      Int     @id @default(autoincrement())
-  code    String  @unique @db.VarChar(50)
-  name    String  @db.VarChar(100)
-  order   Int     @default(0) @db.Int
-  pattern String  @unique @db.VarChar(255)
-  icon    String? @db.VarChar(100)
-  status  String  @default("active")
+  id      Int          @id @default(autoincrement())
+  code    String       @unique @db.VarChar(50)
+  name    String       @db.VarChar(100)
+  order   Int          @default(0) @db.Int
+  pattern String       @unique @db.VarChar(255)
+  icon    String?      @db.VarChar(100)
+  status  CommonStatus @default(active)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -123,19 +128,19 @@ model AppModul {
 }
 
 model Documentation {
-  id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(100)
-  code        String   @unique @db.VarChar(50)
+  id          Int          @id @default(autoincrement())
+  name        String       @db.VarChar(100)
+  code        String       @unique @db.VarChar(50)
   job_id      Int
   birth_date  DateTime
-  money       Decimal  @db.Decimal(19, 4)
+  money       Decimal      @db.Decimal(19, 4)
   hobbies     Json
-  description String?  @db.Text()
-  status      String   @default("active")
-  image       String?  @db.Text
-  file        String?  @db.Text
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  description String?      @db.Text()
+  status      CommonStatus @default(active)
+  image       String?      @db.Text
+  file        String?      @db.Text
+  created_at  DateTime     @default(now())
+  updated_at  DateTime     @updatedAt
   created_by  Int?
   updated_by  Int?
 
@@ -145,12 +150,12 @@ model Documentation {
 }
 
 model MasterCategory {
-  id                 Int     @id @default(autoincrement())
+  id                 Int          @id @default(autoincrement())
   master_category_id Int?
-  code               String  @unique @db.VarChar(50)
-  name               String  @db.VarChar(100)
-  description        String? @db.Text
-  status             String  @default("active")
+  code               String       @unique @db.VarChar(50)
+  name               String       @db.VarChar(100)
+  description        String?      @db.Text
+  status             CommonStatus @default(active)
 
   /// Template
   created_at DateTime @default(now())
@@ -167,21 +172,21 @@ model MasterCategory {
 }
 
 model MasterData {
-  id                   Int     @id @default(autoincrement())
+  id                   Int          @id @default(autoincrement())
   master_data_id       Int?
   master_category_id   Int
-  master_category_code String  @db.VarChar(50)
-  code                 String  @unique @db.VarChar(50)
-  name                 String  @db.VarChar(100)
-  order                Int     @default(0)
-  description          String? @db.Text
-  status               String  @default("active")
-  parameter1_key       String? @db.VarChar(50)
-  parameter1_value     String? @db.VarChar(50)
-  parameter2_key       String? @db.VarChar(50)
-  parameter2_value     String? @db.VarChar(50)
-  parameter3_key       String? @db.VarChar(50)
-  parameter3_value     String? @db.VarChar(50)
+  master_category_code String       @db.VarChar(50)
+  code                 String       @unique @db.VarChar(50)
+  name                 String       @db.VarChar(100)
+  order                Int          @default(0)
+  description          String?      @db.Text
+  status               CommonStatus @default(active)
+  parameter1_key       String?      @db.VarChar(50)
+  parameter1_value     String?      @db.VarChar(50)
+  parameter2_key       String?      @db.VarChar(50)
+  parameter2_value     String?      @db.VarChar(50)
+  parameter3_key       String?      @db.VarChar(50)
+  parameter3_value     String?      @db.VarChar(50)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -201,11 +206,11 @@ model MasterData {
 }
 
 model Parameter {
-  id     Int    @id @default(autoincrement())
-  name   String @db.VarChar(100)
-  code   String @unique @db.VarChar(50)
-  value  String @db.Text
-  status String @default("active")
+  id     Int          @id @default(autoincrement())
+  name   String       @db.VarChar(100)
+  code   String       @unique @db.VarChar(50)
+  value  String       @db.Text
+  status CommonStatus @default(active)
 
   /// Template
   created_at DateTime @default(now())
@@ -427,14 +432,14 @@ model CVSkill {
 model CVTemplatePDF {
   id              String   @id @default(uuid())
   users_id        Int      @unique
-  template_pdf_id Int
+  template_pdf_id Int?
   created_at      DateTime @default(now())
   updated_at      DateTime @updatedAt
   created_by      Int?
   updated_by      Int?
 
-  template_pdf MasterData @relation(fields: [template_pdf_id], references: [id])
-  user         Users      @relation(fields: [users_id], references: [id], onDelete: Cascade)
+  template_pdf MasterData? @relation(fields: [template_pdf_id], references: [id])
+  user         Users       @relation(fields: [users_id], references: [id], onDelete: Cascade)
 
   @@map("cv_template_pdf")
 }
@@ -442,14 +447,14 @@ model CVTemplatePDF {
 model CVTemplateWebsite {
   id                  String   @id @default(uuid())
   users_id            Int      @unique
-  template_website_id Int
+  template_website_id Int?
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
   created_by          Int?
   updated_by          Int?
 
-  template_website MasterData @relation(fields: [template_website_id], references: [id])
-  user             Users      @relation(fields: [users_id], references: [id], onDelete: Cascade)
+  template_website MasterData? @relation(fields: [template_website_id], references: [id])
+  user             Users       @relation(fields: [users_id], references: [id], onDelete: Cascade)
 
   @@map("cv_template_website")
 }

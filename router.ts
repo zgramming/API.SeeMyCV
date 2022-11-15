@@ -25,7 +25,7 @@ import { SettingUserGroupController } from "./routes/setting/user_group";
 import { V1PortfolioController } from "./routes/v1/portfolio";
 import { V1UserController } from "./routes/v1/user";
 
-const router = new Router({});
+const router = new Router();
 
 //! Authentication
 router.post(`/login`, LoginController.login);
@@ -135,8 +135,18 @@ router.del(`/cv/portfolio/:id`, CVPortfolioController.delete);
 
 router.get(
   `/cv/preview/pdf/user_id/:user_id`,
-  CVPreviewController.getPdfPreview
+  CVPreviewController.getPreviewPDF
 );
+router.get(
+  `/cv/preview/pdf/user_id/:user_id/detail`,
+  CVPreviewController.getDetailPreviewPDF
+);
+router.get(
+  `/cv/preview/website/user_id/:user_id`,
+  CVPreviewController.getPreviewWebsite
+);
+router.post("/cv/preview/website", CVPreviewController.saveWebsite);
+router.post("/cv/preview/pdf", CVPreviewController.savePDF);
 router.post(
   `/cv/preview/generate_pdf/user_id/:user_id`,
   CVPreviewController.generatePDF
