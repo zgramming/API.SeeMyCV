@@ -1,6 +1,6 @@
 import { Next, ParameterizedContext } from "koa";
 
-import { PrismaClient } from "@prisma/client";
+import { CommonStatus, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -15,7 +15,7 @@ export class SettingUserGroupController {
     }: {
       code?: string;
       name?: string;
-      status?: string;
+      status?: CommonStatus;
       limit?: number;
       offset?: number;
     } = ctx.query;
@@ -42,20 +42,19 @@ export class SettingUserGroupController {
       const {
         code,
         name,
-        status,
-      }: { code?: string; name?: string; status?: string } = JSON.parse(
+        status = "active",
+      }: { code?: string; name?: string; status?: CommonStatus } = JSON.parse(
         JSON.stringify(ctx.request.body)
       );
 
       if (code == "") ctx.throw("Code is required", 400);
       if (name == "") ctx.throw("Name is required", 400);
-      if (status == "") ctx.throw("Status is required", 400);
 
       const result = await prisma.appGroupUser.create({
         data: {
           code: code ?? "",
           name: name ?? "",
-          status: (status ?? "active") as string,
+          status,
         },
       });
 
@@ -79,14 +78,17 @@ export class SettingUserGroupController {
       const {
         code,
         name,
-        status,
-      }: { id: string; code?: string; name?: string; status?: string } =
-        JSON.parse(JSON.stringify(ctx.request.body));
+        status = "active",
+      }: {
+        id: string;
+        code?: string;
+        name?: string;
+        status?: CommonStatus;
+      } = JSON.parse(JSON.stringify(ctx.request.body));
 
       if (id == 0) ctx.throw("ID is required", 400);
       if (code == "") ctx.throw("Code is required", 400);
       if (name == "") ctx.throw("Name is required", 400);
-      if (status == "") ctx.throw("Status is required", 400);
 
       const result = await prisma.appGroupUser.update({
         where: {
@@ -95,7 +97,7 @@ export class SettingUserGroupController {
         data: {
           code: code,
           name: name,
-          status: (status ?? "active") as string,
+          status,
         },
       });
 
