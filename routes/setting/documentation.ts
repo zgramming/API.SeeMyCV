@@ -1,6 +1,6 @@
 import { Next, ParameterizedContext } from "koa";
 
-import { PrismaClient } from "@prisma/client";
+import { CommonStatus, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 export class SettingDocumentationController {
@@ -16,7 +16,7 @@ export class SettingDocumentationController {
       code?: string;
       name?: string;
       job_id?: number;
-      status?: string;
+      status?: CommonStatus;
       limit?: number;
       offset?: number;
     } = ctx.query;
@@ -54,7 +54,7 @@ export class SettingDocumentationController {
         money?: number;
         hobbies?: string[];
         description?: string;
-        status?: string;
+        status?: CommonStatus;
       } = JSON.parse(JSON.stringify(ctx.request.body));
 
       if (job_id == 0) ctx.throw("Job required", 400);
@@ -106,7 +106,7 @@ export class SettingDocumentationController {
         money?: number;
         hobbies?: string[];
         description?: string;
-        status?: string;
+        status?: CommonStatus;
       } = JSON.parse(JSON.stringify(ctx.request.body));
 
       if (job_id == 0) ctx.throw("Job required", 400);

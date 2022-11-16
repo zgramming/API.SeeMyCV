@@ -1,6 +1,6 @@
 import { Next, ParameterizedContext } from "koa";
 
-import { PrismaClient } from "@prisma/client";
+import { CommonStatus, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 export class SettingMenuController {
@@ -9,14 +9,14 @@ export class SettingMenuController {
       app_modul_id = 0,
       name = "",
       code = "",
-      status = "",
+      status = "active",
       limit,
       offset,
     }: {
       app_modul_id?: number;
       name?: string;
       code?: string;
-      status?: string;
+      status?: CommonStatus;
       limit?: number;
       offset?: number;
     } = ctx.query;
@@ -26,7 +26,7 @@ export class SettingMenuController {
         ...(app_modul_id && { app_modul_id: +app_modul_id }),
         ...(name && { name: { contains: name } }),
         ...(code && { code: { contains: code } }),
-        ...(status && { status: { contains: status } }),
+        ...(status && { status: { equals: status } }),
       },
       ...(limit && limit != 0 && { take: +limit }),
       ...(offset && offset != 0 && { skip: +offset }),
@@ -65,7 +65,7 @@ export class SettingMenuController {
         route?: string;
         order?: number;
         icon?: string;
-        status?: string;
+        status?: CommonStatus;
       } = JSON.parse(JSON.stringify(ctx.request.body));
 
       if (app_modul_id == 0) ctx.throw("Modul required", 400);
@@ -120,7 +120,7 @@ export class SettingMenuController {
         route?: string;
         order?: number;
         icon?: string;
-        status?: string;
+        status?: CommonStatus;
       } = JSON.parse(JSON.stringify(ctx.request.body));
 
       if (id == 0) ctx.throw("ID required", 400);

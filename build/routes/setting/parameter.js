@@ -30,8 +30,6 @@ class SettingParameterController {
                     ctx.throw("Name required", 400);
                 if (value == "")
                     ctx.throw("Value required", 400);
-                if (status == "")
-                    ctx.throw("Status required", 400);
                 const result = yield prisma.parameter.create({
                     data: {
                         code,
@@ -66,8 +64,6 @@ class SettingParameterController {
                     ctx.throw("Name required", 400);
                 if (value == "")
                     ctx.throw("Value required", 400);
-                if (status == "")
-                    ctx.throw("Status required", 400);
                 const result = yield prisma.parameter.update({
                     where: { id: +id },
                     data: {

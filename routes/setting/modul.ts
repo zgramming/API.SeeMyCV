@@ -1,6 +1,6 @@
 import { Next, ParameterizedContext } from "koa";
 
-import { PrismaClient } from "@prisma/client";
+import { CommonStatus, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -17,7 +17,7 @@ export class SettingModulController {
       code?: string;
       name?: string;
       pattern?: string;
-      status?: string;
+      status?: CommonStatus;
       limit?: number;
       offset?: number;
     } = ctx.query;
@@ -56,13 +56,12 @@ export class SettingModulController {
         pattern?: string;
         icon?: string;
         order?: number;
-        status?: string;
+        status?: CommonStatus;
       } = JSON.parse(JSON.stringify(ctx.request.body));
 
       if (code == "") ctx.throw("Code required", 400);
       if (name == "") ctx.throw("Name required", 400);
       if (pattern == "") ctx.throw("Pattern required", 400);
-      if (status == "") ctx.throw("Status required", 400);
 
       const result = await prisma.appModul.create({
         data: {
@@ -105,14 +104,13 @@ export class SettingModulController {
         pattern?: string;
         icon?: string;
         order?: number;
-        status?: string;
+        status?: CommonStatus;
       } = JSON.parse(JSON.stringify(ctx.request.body));
 
       if (id == 0) ctx.throw("ID Required", 400);
       if (code == "") ctx.throw("Code required", 400);
       if (name == "") ctx.throw("Name required", 400);
       if (pattern == "") ctx.throw("Pattern required", 400);
-      if (status == "") ctx.throw("Status required", 400);
 
       const result = await prisma.appModul.update({
         where: { id: +id },

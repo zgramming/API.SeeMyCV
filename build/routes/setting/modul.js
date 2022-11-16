@@ -39,8 +39,6 @@ class SettingModulController {
                     ctx.throw("Name required", 400);
                 if (pattern == "")
                     ctx.throw("Pattern required", 400);
-                if (status == "")
-                    ctx.throw("Status required", 400);
                 const result = yield prisma.appModul.create({
                     data: {
                         code,
@@ -79,8 +77,6 @@ class SettingModulController {
                     ctx.throw("Name required", 400);
                 if (pattern == "")
                     ctx.throw("Pattern required", 400);
-                if (status == "")
-                    ctx.throw("Status required", 400);
                 const result = yield prisma.appModul.update({
                     where: { id: +id },
                     data: {

@@ -15,8 +15,8 @@ const prisma = new client_1.PrismaClient();
 class SettingMenuController {
     static getMenu(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { app_modul_id = 0, name = "", code = "", status = "", limit, offset, } = ctx.query;
-            const result = yield prisma.appMenu.findMany(Object.assign(Object.assign(Object.assign({ where: Object.assign(Object.assign(Object.assign(Object.assign({}, (app_modul_id && { app_modul_id: +app_modul_id })), (name && { name: { contains: name } })), (code && { code: { contains: code } })), (status && { status: { contains: status } })) }, (limit && limit != 0 && { take: +limit })), (offset && offset != 0 && { skip: +offset })), { include: {
+            const { app_modul_id = 0, name = "", code = "", status = "active", limit, offset, } = ctx.query;
+            const result = yield prisma.appMenu.findMany(Object.assign(Object.assign(Object.assign({ where: Object.assign(Object.assign(Object.assign(Object.assign({}, (app_modul_id && { app_modul_id: +app_modul_id })), (name && { name: { contains: name } })), (code && { code: { contains: code } })), (status && { status: { equals: status } })) }, (limit && limit != 0 && { take: +limit })), (offset && offset != 0 && { skip: +offset })), { include: {
                     menu_parent: true,
                     app_modul: true,
                     access_menu: true,

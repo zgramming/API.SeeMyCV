@@ -1,11 +1,11 @@
-import { PrismaClient } from "@prisma/client";
+import { CommonStatus, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 interface UserGroupData {
   name: string;
   code: string;
-  status: string;
+  status: CommonStatus;
 }
 
 const UserGroupSeeder = async () => {

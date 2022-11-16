@@ -32,18 +32,16 @@ class SettingUserGroupController {
     static createUserGroup(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { code, name, status, } = JSON.parse(JSON.stringify(ctx.request.body));
+                const { code, name, status = "active", } = JSON.parse(JSON.stringify(ctx.request.body));
                 if (code == "")
                     ctx.throw("Code is required", 400);
                 if (name == "")
                     ctx.throw("Name is required", 400);
-                if (status == "")
-                    ctx.throw("Status is required", 400);
                 const result = yield prisma.appGroupUser.create({
                     data: {
                         code: code !== null && code !== void 0 ? code : "",
                         name: name !== null && name !== void 0 ? name : "",
-                        status: (status !== null && status !== void 0 ? status : "active"),
+                        status,
                     },
                 });
                 return (ctx.body = {
@@ -66,15 +64,13 @@ class SettingUserGroupController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { id = 0 } = ctx.params;
-                const { code, name, status, } = JSON.parse(JSON.stringify(ctx.request.body));
+                const { code, name, status = "active", } = JSON.parse(JSON.stringify(ctx.request.body));
                 if (id == 0)
                     ctx.throw("ID is required", 400);
                 if (code == "")
                     ctx.throw("Code is required", 400);
                 if (name == "")
                     ctx.throw("Name is required", 400);
-                if (status == "")
-                    ctx.throw("Status is required", 400);
                 const result = yield prisma.appGroupUser.update({
                     where: {
                         id: (_a = +id) !== null && _a !== void 0 ? _a : 0,
@@ -82,7 +78,7 @@ class SettingUserGroupController {
                     data: {
                         code: code,
                         name: name,
-                        status: (status !== null && status !== void 0 ? status : "active"),
+                        status,
                     },
                 });
                 ctx.status = 200;

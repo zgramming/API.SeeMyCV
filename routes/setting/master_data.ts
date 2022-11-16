@@ -1,6 +1,6 @@
 import { Next, ParameterizedContext } from "koa";
 
-import { PrismaClient } from "@prisma/client";
+import { CommonStatus, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 export class SettingMasterDataController {
@@ -18,7 +18,7 @@ export class SettingMasterDataController {
       master_category_code?: string;
       code?: string;
       name?: string;
-      status?: string;
+      status?: CommonStatus;
       limit?: number;
       offset?: number;
     } = ctx.query;
@@ -65,7 +65,7 @@ export class SettingMasterDataController {
         code?: string;
         name?: string;
         description?: string;
-        status?: string;
+        status?: CommonStatus;
         parameter1_key?: string;
         parameter1_value?: string;
         parameter2_key?: string;
@@ -139,7 +139,7 @@ export class SettingMasterDataController {
         code?: string;
         name?: string;
         description?: string;
-        status?: string;
+        status?: CommonStatus;
         parameter1_key?: string;
         parameter1_value?: string;
         parameter2_key?: string;

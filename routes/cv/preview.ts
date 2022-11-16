@@ -294,7 +294,7 @@ export class CVPreviewController {
       ctx.status = 200;
       return (ctx.body = {
         message: "Berhasil mengupdate template PDF",
-        // data: upsert,
+        data: upsert,
       });
     } catch (error: any) {
       console.log({ error: error });

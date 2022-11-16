@@ -1,6 +1,6 @@
-import Router from "koa-router";
-import { PrismaClient } from "@prisma/client";
-import { ParameterizedContext, Next } from "koa";
+import { Next, ParameterizedContext } from "koa";
+
+import { CommonStatus, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 export class SettingParameterController {
@@ -16,7 +16,7 @@ export class SettingParameterController {
       code?: string;
       name?: string;
       value?: string;
-      status?: string;
+      status?: CommonStatus;
       limit?: number;
       offset?: number;
     } = ctx.query;
@@ -46,13 +46,12 @@ export class SettingParameterController {
         code?: string;
         name?: string;
         value?: string;
-        status?: string;
+        status?: CommonStatus;
       } = JSON.parse(JSON.stringify(ctx.request.body));
 
       if (code == "") ctx.throw("Code required", 400);
       if (name == "") ctx.throw("Name required", 400);
       if (value == "") ctx.throw("Value required", 400);
-      if (status == "") ctx.throw("Status required", 400);
 
       const result = await prisma.parameter.create({
         data: {
@@ -89,13 +88,12 @@ export class SettingParameterController {
         code?: string;
         name?: string;
         value?: string;
-        status?: string;
+        status?: CommonStatus;
       } = JSON.parse(JSON.stringify(ctx.request.body));
 
       if (code == "") ctx.throw("Code required", 400);
       if (name == "") ctx.throw("Name required", 400);
       if (value == "") ctx.throw("Value required", 400);
-      if (status == "") ctx.throw("Status required", 400);
 
       const result = await prisma.parameter.update({
         where: { id: +id },

@@ -1,6 +1,6 @@
 import { Next, ParameterizedContext } from "koa";
 
-import { PrismaClient } from "@prisma/client";
+import { CommonStatus, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 export class SettingMasterCategoryController {
@@ -14,7 +14,7 @@ export class SettingMasterCategoryController {
     }: {
       code?: string;
       name?: string;
-      status?: string;
+      status?: CommonStatus;
       limit?: number;
       offset?: number;
     } = ctx.query;
@@ -50,7 +50,7 @@ export class SettingMasterCategoryController {
         code?: string;
         name?: string;
         description?: string;
-        status?: string;
+        status?: CommonStatus;
       } = JSON.parse(JSON.stringify(ctx.request.body));
 
       if (code == "") ctx.throw("Code required", 400);
@@ -96,7 +96,7 @@ export class SettingMasterCategoryController {
         code?: string;
         name?: string;
         description?: string;
-        status?: string;
+        status?: CommonStatus;
       } = JSON.parse(JSON.stringify(ctx.request.body));
 
       if (id == 0) ctx.throw("ID Required", 400);
