@@ -180,14 +180,22 @@ router.get(
 );
 
 router.get("/auth/success", async (ctx, next) => {
-  ctx.cookies.set(keyLocalStorageLogin, JSON.stringify(ctx.state.user), {
-    httpOnly: false,
-    secureProxy: true,
-    sameSite: "none",
-    secure: process.env.APP_ENV === "dev" ? false : true,
-  });
+  try {
+    ctx.cookies.set(keyLocalStorageLogin, JSON.stringify(ctx.state.user), {
+      httpOnly: false,
+      secureProxy: true,
+      maxAge: 1000 * 60 * 60 * 24 * 14, // 14 Day Age
+      sameSite: "none",
+      secure: process.env.APP_ENV === "dev" ? false : true,
+    });
 
-  return ctx.redirect(`${process.env.WEB_BASEURL}`);
+    return ctx.redirect(`${process.env.WEB_BASEURL}`);
+  } catch (error: any) {
+    return (ctx.body = {
+      success: false,
+      message: error.message ?? "Unknown Message",
+    });
+  }
 });
 
 router.get("/auth/failure", async (ctx, next) => {

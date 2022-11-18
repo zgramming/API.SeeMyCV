@@ -119,13 +119,23 @@ router.get("/v1/google/callback", koa_passport_1.default.authenticate("google", 
     failureRedirect: "/auth/failure",
 }));
 router.get("/auth/success", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
-    ctx.cookies.set(constant_1.keyLocalStorageLogin, JSON.stringify(ctx.state.user), {
-        httpOnly: false,
-        secureProxy: true,
-        sameSite: "none",
-        secure: process.env.APP_ENV === "dev" ? false : true,
-    });
-    return ctx.redirect(`${process.env.WEB_BASEURL}`);
+    var _a;
+    try {
+        ctx.cookies.set(constant_1.keyLocalStorageLogin, JSON.stringify(ctx.state.user), {
+            httpOnly: false,
+            secureProxy: true,
+            maxAge: 1000 * 60 * 60 * 24 * 14,
+            sameSite: "none",
+            secure: process.env.APP_ENV === "dev" ? false : true,
+        });
+        return ctx.redirect(`${process.env.WEB_BASEURL}`);
+    }
+    catch (error) {
+        return (ctx.body = {
+            success: false,
+            message: (_a = error.message) !== null && _a !== void 0 ? _a : "Unknown Message",
+        });
+    }
 }));
 router.get("/auth/failure", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
     const url = `${process.env.WEB_BASEURL}/login?error=${true}`;
