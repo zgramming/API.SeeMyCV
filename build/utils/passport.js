@@ -13,10 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 var _a, _b, _c;
 Object.defineProperty(exports, "__esModule", { value: true });
-const client_1 = require("@prisma/client");
 const bcrypt_1 = require("bcrypt");
 const koa_passport_1 = __importDefault(require("koa-passport"));
 const passport_google_oauth20_1 = __importDefault(require("passport-google-oauth20"));
+const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const saltRounds = 10;
 const googleStrategy = new passport_google_oauth20_1.default.Strategy({

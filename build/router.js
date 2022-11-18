@@ -119,7 +119,6 @@ router.get("/v1/google/callback", koa_passport_1.default.authenticate("google", 
     failureRedirect: "/auth/failure",
 }));
 router.get("/auth/success", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const expire = Date.now() + 360000;
     ctx.cookies.set(constant_1.keyLocalStorageLogin, JSON.stringify(ctx.state.user), {
         httpOnly: false,
     });
