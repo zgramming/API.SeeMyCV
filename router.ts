@@ -1,7 +1,6 @@
 import passport from "koa-passport";
 import Router from "koa-router";
 
-import { isLoggedIn } from "./routes/auth/google_auth";
 import { CVContactController } from "./routes/cv/contact";
 import { CVEducationController } from "./routes/cv/education";
 import { CVExperienceController } from "./routes/cv/experience";
@@ -23,7 +22,7 @@ import { SettingUserController } from "./routes/setting/user";
 import { SettingUserGroupController } from "./routes/setting/user_group";
 import { V1PortfolioController } from "./routes/v1/portfolio";
 import { V1UserController } from "./routes/v1/user";
-import { keyLocalStorageLogin } from "./utils/constant";
+import { setCookiesUser } from "./utils/function";
 
 const router = new Router();
 
@@ -181,18 +180,7 @@ router.get(
 
 router.get("/auth/success", async (ctx, next) => {
   try {
-    const baseDomain = process.env.BASE_DOMAIN;
-    ctx.cookies.set(keyLocalStorageLogin, JSON.stringify(ctx.state.user), {
-      path: "/",
-      sameSite: "none",
-      domain: baseDomain,
-      maxAge: 1000 * 60 * 60 * 24 * 14, // 14 Day Age
-      httpOnly: false,
-      secure: process.env.APP_ENV == "dev" ? false : true,
-    });
-
-    console.log({ secure: ctx.cookies.secure });
-
+    setCookiesUser({ ctx, next });
     return ctx.redirect(`${process.env.WEB_BASEURL}`);
   } catch (error: any) {
     return (ctx.body = {
@@ -205,14 +193,6 @@ router.get("/auth/success", async (ctx, next) => {
 router.get("/auth/failure", async (ctx, next) => {
   const url = `${process.env.WEB_BASEURL}/login?error=${true}`;
   return ctx.redirect(url);
-});
-
-router.post("/v1/logout", isLoggedIn, async (ctx, next) => {
-  // ctx.logOut();
-  return (ctx.body = {
-    success: true,
-    message: "Berhasil logout dari aplikasi",
-  });
 });
 
 export default router;

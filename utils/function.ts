@@ -1,7 +1,7 @@
-import { ParameterizedContext } from "koa";
-import { ERROR_TYPE_VALIDATION } from "./constant";
-import Validator from "fastest-validator";
 import { existsSync } from "fs";
+
+import { KoaMiddlewareInterface } from "../interface/koa_middleware_interface";
+import { keyCookieAuth } from "./constant";
 
 export const mbTObytes = (mb: number) => {
   const multiplication = 1048576;
@@ -76,5 +76,20 @@ export const validationFile = ({
     );
   }
 
+  return true;
+};
+
+export const setCookiesUser = ({ ctx, next }: KoaMiddlewareInterface) => {
+  const baseDomain =
+    process.env.APP_ENV == "dev" ? undefined : process.env.BASE_DOMAIN;
+  console.log({ user: ctx.state.user });
+  ctx.cookies.set(keyCookieAuth, JSON.stringify(ctx.state.user), {
+    path: "/",
+    sameSite: "lax",
+    domain: baseDomain,
+    maxAge: 1000 * 60 * 60 * 24 * 14, // 14 Day Age
+    httpOnly: false,
+    secure: process.env.APP_ENV == "dev" ? false : true,
+  });
   return true;
 };

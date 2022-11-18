@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const koa_passport_1 = __importDefault(require("koa-passport"));
 const koa_router_1 = __importDefault(require("koa-router"));
-const google_auth_1 = require("./routes/auth/google_auth");
 const contact_1 = require("./routes/cv/contact");
 const education_1 = require("./routes/cv/education");
 const experience_1 = require("./routes/cv/experience");
@@ -36,7 +35,7 @@ const user_1 = require("./routes/setting/user");
 const user_group_1 = require("./routes/setting/user_group");
 const portfolio_2 = require("./routes/v1/portfolio");
 const user_2 = require("./routes/v1/user");
-const constant_1 = require("./utils/constant");
+const function_1 = require("./utils/function");
 const router = new koa_router_1.default();
 //! Authentication
 router.post(`/login`, login_1.LoginController.login);
@@ -121,16 +120,7 @@ router.get("/v1/google/callback", koa_passport_1.default.authenticate("google", 
 router.get("/auth/success", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const baseDomain = process.env.BASE_DOMAIN;
-        ctx.cookies.set(constant_1.keyLocalStorageLogin, JSON.stringify(ctx.state.user), {
-            path: "/",
-            sameSite: "none",
-            domain: baseDomain,
-            maxAge: 1000 * 60 * 60 * 24 * 14,
-            httpOnly: false,
-            secure: process.env.APP_ENV == "dev" ? false : true,
-        });
-        console.log({ secure: ctx.cookies.secure });
+        (0, function_1.setCookiesUser)({ ctx, next });
         return ctx.redirect(`${process.env.WEB_BASEURL}`);
     }
     catch (error) {
@@ -143,12 +133,5 @@ router.get("/auth/success", (ctx, next) => __awaiter(void 0, void 0, void 0, fun
 router.get("/auth/failure", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
     const url = `${process.env.WEB_BASEURL}/login?error=${true}`;
     return ctx.redirect(url);
-}));
-router.post("/v1/logout", google_auth_1.isLoggedIn, (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
-    // ctx.logOut();
-    return (ctx.body = {
-        success: true,
-        message: "Berhasil logout dari aplikasi",
-    });
 }));
 exports.default = router;
