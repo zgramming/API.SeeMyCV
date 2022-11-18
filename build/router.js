@@ -120,9 +120,9 @@ router.get("/v1/google/callback", koa_passport_1.default.authenticate("google", 
 }));
 router.get("/auth/success", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
     ctx.cookies.set(constant_1.keyLocalStorageLogin, JSON.stringify(ctx.state.user), {
-        httpOnly: false,
+        httpOnly: process.env.APP_ENV === "dev" ? false : true,
+        secure: process.env.APP_ENV === "dev" ? false : true,
     });
-    console.log({ user: ctx.state });
     return ctx.redirect(`${process.env.WEB_BASEURL}`);
 }));
 router.get("/auth/failure", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
