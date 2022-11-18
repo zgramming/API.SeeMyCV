@@ -8,5 +8,5 @@ export const AVAILABLE_ACCESS_MENU = [
   "print",
   "approve",
 ];
-export const keyLocalStorageLogin = "user_local_storage";
+export const keyCookieAuth = "user_auth_cookies";
 export const ERROR_TYPE_VALIDATION = "VALIDATION_ERROR";
