@@ -121,10 +121,13 @@ router.get("/v1/google/callback", koa_passport_1.default.authenticate("google", 
 router.get("/auth/success", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
+        const baseDomain = process.env.BASE_DOMAIN;
         ctx.cookies.set(constant_1.keyLocalStorageLogin, JSON.stringify(ctx.state.user), {
             path: "/",
+            sameSite: "none",
+            domain: baseDomain,
             maxAge: 1000 * 60 * 60 * 24 * 14,
-            httpOnly: process.env.APP_ENV == "dev" ? false : true,
+            httpOnly: false,
             secure: process.env.APP_ENV == "dev" ? false : true,
         });
         console.log({ secure: ctx.cookies.secure });

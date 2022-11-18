@@ -181,10 +181,13 @@ router.get(
 
 router.get("/auth/success", async (ctx, next) => {
   try {
+    const baseDomain = process.env.BASE_DOMAIN;
     ctx.cookies.set(keyLocalStorageLogin, JSON.stringify(ctx.state.user), {
       path: "/",
+      sameSite: "none",
+      domain: baseDomain,
       maxAge: 1000 * 60 * 60 * 24 * 14, // 14 Day Age
-      httpOnly: process.env.APP_ENV == "dev" ? false : true,
+      httpOnly: false,
       secure: process.env.APP_ENV == "dev" ? false : true,
     });
 
