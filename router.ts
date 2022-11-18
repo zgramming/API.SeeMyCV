@@ -181,9 +181,9 @@ router.get(
 
 router.get("/auth/success", async (ctx, next) => {
   ctx.cookies.set(keyLocalStorageLogin, JSON.stringify(ctx.state.user), {
-    httpOnly: false,
+    httpOnly: process.env.APP_ENV === "dev" ? false : true,
+    secure: process.env.APP_ENV === "dev" ? false : true,
   });
-  console.log({ user: ctx.state });
 
   return ctx.redirect(`${process.env.WEB_BASEURL}`);
 });
