@@ -16,6 +16,8 @@ const router_1 = __importDefault(require("./router"));
 const app = new koa_1.default();
 require("dotenv").config();
 require("./utils/passport");
+/// Proxy Initialize, for trust NginX x-forwarded-* header
+app.proxy = true;
 /// Passport initialize
 app.keys = [(_a = process.env.KOA_SESSION_SECRET) !== null && _a !== void 0 ? _a : ""];
 app.use((0, koa_session_1.default)({}, app));

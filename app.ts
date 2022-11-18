@@ -15,6 +15,9 @@ const app = new Koa();
 require("dotenv").config();
 require("./utils/passport");
 
+/// Proxy Initialize, for trust NginX x-forwarded-* header
+app.proxy = true;
+
 /// Passport initialize
 app.keys = [process.env.KOA_SESSION_SECRET ?? ""];
 app.use(session({}, app));
