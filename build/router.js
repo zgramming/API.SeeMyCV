@@ -1,5 +1,4 @@
 "use strict";
-// app.use(KoaCompose([LoginRouter.routes(), LoginRouter.allowedMethods()]));
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const koa_passport_1 = __importDefault(require("koa-passport"));
 const koa_router_1 = __importDefault(require("koa-router"));
+const google_auth_1 = require("./routes/auth/google_auth");
 const contact_1 = require("./routes/cv/contact");
 const education_1 = require("./routes/cv/education");
 const experience_1 = require("./routes/cv/experience");
@@ -36,6 +36,7 @@ const user_1 = require("./routes/setting/user");
 const user_group_1 = require("./routes/setting/user_group");
 const portfolio_2 = require("./routes/v1/portfolio");
 const user_2 = require("./routes/v1/user");
+const constant_1 = require("./utils/constant");
 const router = new koa_router_1.default();
 //! Authentication
 router.post(`/login`, login_1.LoginController.login);
@@ -110,34 +111,29 @@ router.get(`/v1/user/:username`, user_2.V1UserController.getByUsername);
 router.get(`/v1/portfolio/username/:username/slug/:slug`, portfolio_2.V1PortfolioController.getByUsernameAndSlug);
 router.post(`/v1/user/signup`, user_2.V1UserController.signup);
 //! Experimental
-router.get("/v1/google/signin/failed", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
-    ctx.status = 403;
-    ctx.body = {
-        error: true,
-        message: "Login Failure",
-    };
-}));
-router.get("/v1/google/signin/success", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!ctx.isAuthenticated) {
-        ctx.status = 403;
-        return (ctx.body = {
-            error: true,
-            message: "Not Authorized",
-        });
-    }
-    ctx.status = 200;
-    return (ctx.body = {
-        error: false,
-        message: "Login Success",
-    });
-}));
 router.get("/v1/google/signin", koa_passport_1.default.authenticate("google", {
-    successRedirect: process.env.GOOGLE_OAUTH_SUCCESSREDIRECT,
-    failureRedirect: process.env.GOOGLE_OAUTH_FAILEDREDIRECT,
+    scope: ["email", "profile"],
 }));
-router.get("/v1/logout", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    ctx.logOut();
-    ctx.redirect((_a = process.env.GOOGLE_OAUTH_SUCCESSREDIRECT) !== null && _a !== void 0 ? _a : "");
+router.get("/v1/google/callback", koa_passport_1.default.authenticate("google", {
+    successRedirect: "/auth/success",
+    failureRedirect: "/auth/failure",
+}));
+router.get("/auth/success", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
+    ctx.cookies.set(constant_1.keyLocalStorageLogin, JSON.stringify(ctx.state.user), {
+        httpOnly: false,
+    });
+    console.log({ user: ctx.state });
+    return ctx.redirect(`${process.env.WEB_BASEURL}`);
+}));
+router.get("/auth/failure", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const url = `${process.env.WEB_BASEURL}/login?error=${true}`;
+    return ctx.redirect(url);
+}));
+router.post("/v1/logout", google_auth_1.isLoggedIn, (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
+    // ctx.logOut();
+    return (ctx.body = {
+        success: true,
+        message: "Berhasil logout dari aplikasi",
+    });
 }));
 exports.default = router;

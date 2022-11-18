@@ -1,8 +1,7 @@
-// app.use(KoaCompose([LoginRouter.routes(), LoginRouter.allowedMethods()]));
-
 import passport from "koa-passport";
 import Router from "koa-router";
 
+import { isLoggedIn } from "./routes/auth/google_auth";
 import { CVContactController } from "./routes/cv/contact";
 import { CVEducationController } from "./routes/cv/education";
 import { CVExperienceController } from "./routes/cv/experience";
@@ -24,6 +23,7 @@ import { SettingUserController } from "./routes/setting/user";
 import { SettingUserGroupController } from "./routes/setting/user_group";
 import { V1PortfolioController } from "./routes/v1/portfolio";
 import { V1UserController } from "./routes/v1/user";
+import { keyLocalStorageLogin } from "./utils/constant";
 
 const router = new Router();
 
@@ -164,41 +164,41 @@ router.post(`/v1/user/signup`, V1UserController.signup);
 
 //! Experimental
 
-router.get("/v1/google/signin/failed", async (ctx, next) => {
-  ctx.status = 403;
-  ctx.body = {
-    error: true,
-    message: "Login Failure",
-  };
-});
-
-router.get("/v1/google/signin/success", async (ctx, next) => {
-  if (!ctx.isAuthenticated) {
-    ctx.status = 403;
-    return (ctx.body = {
-      error: true,
-      message: "Not Authorized",
-    });
-  }
-
-  ctx.status = 200;
-  return (ctx.body = {
-    error: false,
-    message: "Login Success",
-  });
-});
-
 router.get(
   "/v1/google/signin",
   passport.authenticate("google", {
-    successRedirect: process.env.GOOGLE_OAUTH_SUCCESSREDIRECT,
-    failureRedirect: process.env.GOOGLE_OAUTH_FAILEDREDIRECT,
+    scope: ["email", "profile"],
   })
 );
 
-router.get("/v1/logout", async (ctx, next) => {
-  ctx.logOut();
-  ctx.redirect(process.env.GOOGLE_OAUTH_SUCCESSREDIRECT ?? "");
+router.get(
+  "/v1/google/callback",
+  passport.authenticate("google", {
+    successRedirect: "/auth/success",
+    failureRedirect: "/auth/failure",
+  })
+);
+
+router.get("/auth/success", async (ctx, next) => {
+  ctx.cookies.set(keyLocalStorageLogin, JSON.stringify(ctx.state.user), {
+    httpOnly: false,
+  });
+  console.log({ user: ctx.state });
+
+  return ctx.redirect(`${process.env.WEB_BASEURL}`);
+});
+
+router.get("/auth/failure", async (ctx, next) => {
+  const url = `${process.env.WEB_BASEURL}/login?error=${true}`;
+  return ctx.redirect(url);
+});
+
+router.post("/v1/logout", isLoggedIn, async (ctx, next) => {
+  // ctx.logOut();
+  return (ctx.body = {
+    success: true,
+    message: "Berhasil logout dari aplikasi",
+  });
 });
 
 export default router;
