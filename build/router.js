@@ -123,12 +123,11 @@ router.get("/auth/success", (ctx, next) => __awaiter(void 0, void 0, void 0, fun
     try {
         ctx.cookies.set(constant_1.keyLocalStorageLogin, JSON.stringify(ctx.state.user), {
             path: "/",
-            sameSite: "none",
             maxAge: 1000 * 60 * 60 * 24 * 14,
-            secureProxy: true,
-            httpOnly: false,
+            httpOnly: process.env.APP_ENV == "dev" ? false : true,
             secure: process.env.APP_ENV == "dev" ? false : true,
         });
+        console.log({ secure: ctx.cookies.secure });
         return ctx.redirect(`${process.env.WEB_BASEURL}`);
     }
     catch (error) {

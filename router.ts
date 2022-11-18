@@ -183,12 +183,12 @@ router.get("/auth/success", async (ctx, next) => {
   try {
     ctx.cookies.set(keyLocalStorageLogin, JSON.stringify(ctx.state.user), {
       path: "/",
-      sameSite: "none",
       maxAge: 1000 * 60 * 60 * 24 * 14, // 14 Day Age
-      secureProxy: true,
-      httpOnly: false,
+      httpOnly: process.env.APP_ENV == "dev" ? false : true,
       secure: process.env.APP_ENV == "dev" ? false : true,
     });
+
+    console.log({ secure: ctx.cookies.secure });
 
     return ctx.redirect(`${process.env.WEB_BASEURL}`);
   } catch (error: any) {
