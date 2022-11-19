@@ -22,7 +22,7 @@ import { SettingUserController } from "./routes/setting/user";
 import { SettingUserGroupController } from "./routes/setting/user_group";
 import { V1PortfolioController } from "./routes/v1/portfolio";
 import { V1UserController } from "./routes/v1/user";
-import { setCookiesUser } from "./utils/function";
+import { destroyCookiesUser, setCookiesUser } from "./utils/function";
 
 const router = new Router();
 
@@ -182,6 +182,19 @@ router.get("/auth/success", async (ctx, next) => {
   try {
     setCookiesUser({ ctx, next });
     return ctx.redirect(`${process.env.WEB_BASEURL}`);
+  } catch (error: any) {
+    return (ctx.body = {
+      success: false,
+      message: error.message ?? "Unknown Message",
+    });
+  }
+});
+
+router.get("/v1/logout", async (ctx, next) => {
+  try {
+    destroyCookiesUser({ ctx, next });
+    const redirectUrl = process.env.WEB_URL_LOGIN ?? "";
+    return ctx.redirect(redirectUrl);
   } catch (error: any) {
     return (ctx.body = {
       success: false,

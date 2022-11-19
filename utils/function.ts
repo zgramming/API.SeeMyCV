@@ -80,16 +80,31 @@ export const validationFile = ({
 };
 
 export const setCookiesUser = ({ ctx, next }: KoaMiddlewareInterface) => {
-  const baseDomain =
-    process.env.APP_ENV == "dev" ? undefined : process.env.BASE_DOMAIN;
+  const isDev = process.env.APP_ENV == "dev";
+  const baseDomain = isDev ? undefined : process.env.BASE_DOMAIN;
   console.log({ user: ctx.state.user });
   ctx.cookies.set(keyCookieAuth, JSON.stringify(ctx.state.user), {
     path: "/",
-    sameSite: "lax",
+    sameSite: isDev ? undefined : "none",
     domain: baseDomain,
     maxAge: 1000 * 60 * 60 * 24 * 14, // 14 Day Age
     httpOnly: false,
-    secure: process.env.APP_ENV == "dev" ? false : true,
+    secure: isDev ? false : true,
   });
+  return true;
+};
+
+export const destroyCookiesUser = ({ ctx, next }: KoaMiddlewareInterface) => {
+  const isDev = process.env.APP_ENV == "dev";
+  const baseDomain = isDev ? undefined : process.env.BASE_DOMAIN;
+  ctx.cookies.set(keyCookieAuth, "", {
+    path: "/",
+    sameSite: isDev ? undefined : "none",
+    domain: baseDomain,
+    expires: new Date(),
+    httpOnly: false,
+    secure: isDev ? false : true,
+  });
+
   return true;
 };
