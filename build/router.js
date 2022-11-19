@@ -130,6 +130,20 @@ router.get("/auth/success", (ctx, next) => __awaiter(void 0, void 0, void 0, fun
         });
     }
 }));
+router.get("/v1/logout", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b, _c;
+    try {
+        (0, function_1.destroyCookiesUser)({ ctx, next });
+        const redirectUrl = (_b = process.env.WEB_URL_LOGIN) !== null && _b !== void 0 ? _b : "";
+        return ctx.redirect(redirectUrl);
+    }
+    catch (error) {
+        return (ctx.body = {
+            success: false,
+            message: (_c = error.message) !== null && _c !== void 0 ? _c : "Unknown Message",
+        });
+    }
+}));
 router.get("/auth/failure", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
     const url = `${process.env.WEB_BASEURL}/login?error=${true}`;
     return ctx.redirect(url);
