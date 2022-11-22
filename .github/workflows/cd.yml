@@ -30,9 +30,9 @@ jobs:
             echo "CD to folder project"
             cd /var/www/api.seemycv
             echo "Reset Git to the latest commit"
-            git reset --hard
+            git reset --hard origin/main
             echo "Pull Rebase"
-            git pull --rebase
+            git pull origin main --rebase
             echo "NPM I if available new package"
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
