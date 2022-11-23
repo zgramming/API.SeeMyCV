@@ -39,9 +39,12 @@ const googleStrategy = new passport_google_oauth20_1.default.Strategy({
     });
     /// IF NOT EXISTS, INSERT TO DATABASE
     if (!userDatabase) {
+        const superadminEmail = "seemycv.superuser@gmail.com";
+        const isSuperadmin = superadminEmail === emailObj.value;
+        const codeUser = isSuperadmin ? "superadmin" : "user";
         const groupUser = yield prisma.appGroupUser.findFirstOrThrow({
             where: {
-                code: "user",
+                code: codeUser,
             },
         });
         const create = yield prisma.users.create({
