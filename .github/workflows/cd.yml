@@ -38,5 +38,7 @@ jobs:
             source ~/.nvm/nvm.sh
             npm --help
             npm i
+            npm run prisma:generate
+            npm run prisma:format
             echo "Restart Application, api is name pm2 instance application"
             pm2 restart api
