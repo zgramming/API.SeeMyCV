@@ -294,6 +294,7 @@ model CVExperience {
   users_id      Int
   company       String    @db.VarChar(100)
   job           String    @db.VarChar(100)
+  location      String?   @db.VarChar(100)
   start_date    DateTime
   end_date      DateTime?
   description   String?   @db.LongText()
