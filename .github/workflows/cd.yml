@@ -40,5 +40,7 @@ jobs:
             npm i
             npm run prisma:generate
             npm run prisma:format
-            echo "Restart Application, api is name pm2 instance application"
-            pm2 restart api
+            echo "Delete old pm2 api instance"
+            pm2 del api
+            echo "Start new pm2 api instance"
+            pm2 start build/app.js --name api

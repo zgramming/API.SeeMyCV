@@ -25,7 +25,6 @@ const skill_1 = require("./routes/cv/skill");
 const access_menu_1 = require("./routes/setting/access_menu");
 const access_modul_1 = require("./routes/setting/access_modul");
 const documentation_1 = require("./routes/setting/documentation");
-const login_1 = require("./routes/setting/login");
 const master_category_1 = require("./routes/setting/master_category");
 const master_data_1 = require("./routes/setting/master_data");
 const menu_1 = require("./routes/setting/menu");
@@ -150,6 +149,4 @@ router.get("/auth/failure", (ctx, next) => __awaiter(void 0, void 0, void 0, fun
     const url = `${process.env.WEB_BASEURL}/login?error=${true}`;
     return ctx.redirect(url);
 }));
-// router.post(`/login`, LoginController.login);
-router.post(`/login_jwt`, token_1.verifyToken, login_1.LoginController.loginJWT);
 exports.default = router;
