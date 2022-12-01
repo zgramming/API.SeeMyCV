@@ -206,7 +206,4 @@ router.get("/auth/failure", async (ctx, next) => {
   return ctx.redirect(url);
 });
 
-// router.post(`/login`, LoginController.login);
-router.post(`/login_jwt`, verifyToken, LoginController.loginJWT);
-
 export default router;
