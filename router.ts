@@ -22,12 +22,9 @@ import { SettingUserController } from "./routes/setting/user";
 import { SettingUserGroupController } from "./routes/setting/user_group";
 import { V1PortfolioController } from "./routes/v1/portfolio";
 import { V1UserController } from "./routes/v1/user";
-import { destroyCookiesUser, setCookiesUser } from "./utils/function";
+import { destroyCookiesUser, setCookiesUser, verifyToken } from "./utils/token";
 
 const router = new Router();
-
-//! Authentication
-router.post(`/login`, LoginController.login);
 
 //! Setting Section
 
@@ -159,36 +156,25 @@ router.get(
   `/v1/portfolio/username/:username/slug/:slug`,
   V1PortfolioController.getByUsernameAndSlug
 );
-router.post(`/v1/user/signup`, V1UserController.signup);
 
-//! Experimental
+//! V1 - Authentication
 
-router.get(
-  "/v1/google/signin",
-  passport.authenticate("google", {
-    scope: ["email", "profile"],
-  })
-);
+// Run function on passport.ts on fn [googleStrategy()]
+// router.get(
+//   "/v1/google/signin",
+//   passport.authenticate("google", {
+//     scope: ["email", "profile"],
+//   })
+// );
 
 router.get(
   "/v1/google/callback",
   passport.authenticate("google", {
+    scope: ["email", "profile"],
     successRedirect: "/auth/success",
     failureRedirect: "/auth/failure",
   })
 );
-
-router.get("/auth/success", async (ctx, next) => {
-  try {
-    setCookiesUser({ ctx, next });
-    return ctx.redirect(`${process.env.WEB_BASEURL}`);
-  } catch (error: any) {
-    return (ctx.body = {
-      success: false,
-      message: error.message ?? "Unknown Message",
-    });
-  }
-});
 
 router.get("/v1/logout", async (ctx, next) => {
   try {
@@ -203,9 +189,24 @@ router.get("/v1/logout", async (ctx, next) => {
   }
 });
 
+router.get("/auth/success", async (ctx, next) => {
+  try {
+    setCookiesUser({ ctx, next });
+    return ctx.redirect(`${process.env.WEB_BASEURL}`);
+  } catch (error: any) {
+    return (ctx.body = {
+      success: false,
+      message: error.message ?? "Unknown Message",
+    });
+  }
+});
+
 router.get("/auth/failure", async (ctx, next) => {
   const url = `${process.env.WEB_BASEURL}/login?error=${true}`;
   return ctx.redirect(url);
 });
+
+// router.post(`/login`, LoginController.login);
+router.post(`/login_jwt`, verifyToken, LoginController.loginJWT);
 
 export default router;

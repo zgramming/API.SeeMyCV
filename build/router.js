@@ -35,10 +35,8 @@ const user_1 = require("./routes/setting/user");
 const user_group_1 = require("./routes/setting/user_group");
 const portfolio_2 = require("./routes/v1/portfolio");
 const user_2 = require("./routes/v1/user");
-const function_1 = require("./utils/function");
+const token_1 = require("./utils/token");
 const router = new koa_router_1.default();
-//! Authentication
-router.post(`/login`, login_1.LoginController.login);
 //! Setting Section
 router.get(`/setting/user`, user_1.SettingUserController.getUsers);
 router.post(`/setting/user`, user_1.SettingUserController.createUsers);
@@ -108,34 +106,38 @@ router.get(`/cv/contact/user_id/:users_id`, contact_1.CVContactController.get);
 //! V1 Section
 router.get(`/v1/user/:username`, user_2.V1UserController.getByUsername);
 router.get(`/v1/portfolio/username/:username/slug/:slug`, portfolio_2.V1PortfolioController.getByUsernameAndSlug);
-router.post(`/v1/user/signup`, user_2.V1UserController.signup);
-//! Experimental
-router.get("/v1/google/signin", koa_passport_1.default.authenticate("google", {
-    scope: ["email", "profile"],
-}));
+//! V1 - Authentication
+// Run function on passport.ts on fn [googleStrategy()]
+// router.get(
+//   "/v1/google/signin",
+//   passport.authenticate("google", {
+//     scope: ["email", "profile"],
+//   })
+// );
 router.get("/v1/google/callback", koa_passport_1.default.authenticate("google", {
+    scope: ["email", "profile"],
     successRedirect: "/auth/success",
     failureRedirect: "/auth/failure",
 }));
-router.get("/auth/success", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+router.get("/v1/logout", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
-        (0, function_1.setCookiesUser)({ ctx, next });
-        return ctx.redirect(`${process.env.WEB_BASEURL}`);
+        (0, token_1.destroyCookiesUser)({ ctx, next });
+        const redirectUrl = (_a = process.env.WEB_URL_LOGIN) !== null && _a !== void 0 ? _a : "";
+        return ctx.redirect(redirectUrl);
     }
     catch (error) {
         return (ctx.body = {
             success: false,
-            message: (_a = error.message) !== null && _a !== void 0 ? _a : "Unknown Message",
+            message: (_b = error.message) !== null && _b !== void 0 ? _b : "Unknown Message",
         });
     }
 }));
-router.get("/v1/logout", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b, _c;
+router.get("/auth/success", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _c;
     try {
-        (0, function_1.destroyCookiesUser)({ ctx, next });
-        const redirectUrl = (_b = process.env.WEB_URL_LOGIN) !== null && _b !== void 0 ? _b : "";
-        return ctx.redirect(redirectUrl);
+        (0, token_1.setCookiesUser)({ ctx, next });
+        return ctx.redirect(`${process.env.WEB_BASEURL}`);
     }
     catch (error) {
         return (ctx.body = {
@@ -148,4 +150,6 @@ router.get("/auth/failure", (ctx, next) => __awaiter(void 0, void 0, void 0, fun
     const url = `${process.env.WEB_BASEURL}/login?error=${true}`;
     return ctx.redirect(url);
 }));
+// router.post(`/login`, LoginController.login);
+router.post(`/login_jwt`, token_1.verifyToken, login_1.LoginController.loginJWT);
 exports.default = router;

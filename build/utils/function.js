@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.destroyCookiesUser = exports.setCookiesUser = exports.validationFile = exports.mbTObytes = void 0;
+exports.validationFile = exports.mbTObytes = void 0;
 const fs_1 = require("fs");
-const constant_1 = require("./constant");
 const mbTObytes = (mb) => {
     const multiplication = 1048576;
     return mb * multiplication;
@@ -52,32 +51,3 @@ const validationFile = ({ file, allowedMimetype, limitSizeMB, onError, }) => {
     return true;
 };
 exports.validationFile = validationFile;
-const setCookiesUser = ({ ctx, next }) => {
-    const isDev = process.env.APP_ENV == "dev";
-    const baseDomain = isDev ? undefined : process.env.BASE_DOMAIN;
-    console.log({ user: ctx.state.user });
-    ctx.cookies.set(constant_1.keyCookieAuth, JSON.stringify(ctx.state.user), {
-        path: "/",
-        sameSite: isDev ? undefined : "none",
-        domain: baseDomain,
-        maxAge: 1000 * 60 * 60 * 24 * 14,
-        httpOnly: false,
-        secure: isDev ? false : true,
-    });
-    return true;
-};
-exports.setCookiesUser = setCookiesUser;
-const destroyCookiesUser = ({ ctx, next }) => {
-    const isDev = process.env.APP_ENV == "dev";
-    const baseDomain = isDev ? undefined : process.env.BASE_DOMAIN;
-    ctx.cookies.set(constant_1.keyCookieAuth, "", {
-        path: "/",
-        sameSite: isDev ? undefined : "none",
-        domain: baseDomain,
-        expires: new Date(),
-        httpOnly: false,
-        secure: isDev ? false : true,
-    });
-    return true;
-};
-exports.destroyCookiesUser = destroyCookiesUser;

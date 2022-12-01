@@ -32,7 +32,7 @@ const googleStrategy = new passport_google_oauth20_1.default.Strategy({
     }
     const emailObj = emails[0];
     if (emailObj.verified == "false") {
-        return done(new Error("Email not yet verified"), profile);
+        return done(new Error("Email not verified"), profile);
     }
     const userDatabase = yield prisma.users.findFirst({
         where: { email: emailObj.value },

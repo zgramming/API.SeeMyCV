@@ -26,6 +26,7 @@ const googleStrategy = new GoogleOauth.Strategy(
       photos,
       username,
     } = profile;
+
     if (!emails) {
       return done(new Error("Email tidak valid"), profile);
     }
@@ -33,7 +34,7 @@ const googleStrategy = new GoogleOauth.Strategy(
     const emailObj = emails![0];
 
     if (emailObj.verified == "false") {
-      return done(new Error("Email not yet verified"), profile);
+      return done(new Error("Email not verified"), profile);
     }
 
     const userDatabase = await prisma.users.findFirst({
