@@ -50,6 +50,7 @@ export class CVExperienceController {
         users_id,
         company,
         job,
+        location,
         start_date,
         end_date,
         description,
@@ -66,6 +67,7 @@ export class CVExperienceController {
         users_id: +users_id,
         company,
         job,
+        location: location ?? null,
         start_date: new Date(start_date),
         end_date: new Date(end_date),
         description: description ?? null,
@@ -78,7 +80,6 @@ export class CVExperienceController {
         body: data,
         file: ctx.request.files,
       });
-      // ctx.throw(500, new Error("error"));
 
       const files = ctx.request.files;
 

@@ -2,8 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["interactiveTransactions"]
+  provider = "prisma-client-js"
   // output          = "../node_modules/.prisma/client"
 }
 
@@ -251,7 +250,6 @@ model Users {
 }
 
 //! Aplikasi
-
 model CVContact {
   id             String   @id @default(uuid())
   users_id       Int
