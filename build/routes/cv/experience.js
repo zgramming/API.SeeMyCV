@@ -53,7 +53,7 @@ class CVExperienceController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const createDir = (0, fs_1.mkdirSync)(dirUpload, { recursive: true });
-                const { id, users_id, company, job, start_date, end_date, description, is_graduated, tags, } = ctx.request.body;
+                const { id, users_id, company, job, location, start_date, end_date, description, is_graduated, tags, } = ctx.request.body;
                 const exp = yield prisma.cVExperience.findFirst({
                     where: { id: id !== null && id !== void 0 ? id : "" },
                 });
@@ -62,6 +62,7 @@ class CVExperienceController {
                     users_id: +users_id,
                     company,
                     job,
+                    location: location !== null && location !== void 0 ? location : null,
                     start_date: new Date(start_date),
                     end_date: new Date(end_date),
                     description: description !== null && description !== void 0 ? description : null,
@@ -73,7 +74,6 @@ class CVExperienceController {
                     body: data,
                     file: ctx.request.files,
                 });
-                // ctx.throw(500, new Error("error"));
                 const files = ctx.request.files;
                 const schema = Object.assign(Object.assign({ id: { type: "string", optional: true }, users_id: { type: "number" }, company: { type: "string" }, job: { type: "string" }, start_date: { type: "date" } }, (end_date && { end_date: "date" })), { description: { type: "string" } });
                 const createSchema = validator.compile(schema);

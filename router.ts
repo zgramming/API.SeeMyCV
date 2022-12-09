@@ -12,7 +12,6 @@ import { CVSkillController } from "./routes/cv/skill";
 import { SettingAccessMenuController } from "./routes/setting/access_menu";
 import { SettingAccessModulController } from "./routes/setting/access_modul";
 import { SettingDocumentationController } from "./routes/setting/documentation";
-import { LoginController } from "./routes/setting/login";
 import { SettingMasterCategoryController } from "./routes/setting/master_category";
 import { SettingMasterDataController } from "./routes/setting/master_data";
 import { SettingMenuController } from "./routes/setting/menu";
