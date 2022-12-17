@@ -50,11 +50,14 @@ class V1UserController {
                     include: {
                         CVSkill: {
                             include: { level: true },
-                            orderBy: {
-                                level: {
-                                    order: "desc",
+                            orderBy: [
+                                {
+                                    level: {
+                                        order: "desc",
+                                    },
                                 },
-                            },
+                                { name: "asc" },
+                            ],
                         },
                         CVExperience: {
                             orderBy: {
