@@ -98,6 +98,7 @@ router.del(`/cv/portfolio/:id`, portfolio_1.CVPortfolioController.delete);
 router.get(`/cv/preview/pdf/user_id/:user_id`, preview_1.CVPreviewController.getPreviewPDF);
 router.get(`/cv/preview/pdf/user_id/:user_id/detail`, preview_1.CVPreviewController.getDetailPreviewPDF);
 router.get(`/cv/preview/website/user_id/:user_id`, preview_1.CVPreviewController.getPreviewWebsite);
+router.get(`/cv/preview/website/username/:username`, preview_1.CVPreviewController.getPreviewWebsiteByUsername);
 router.post("/cv/preview/website", preview_1.CVPreviewController.saveWebsite);
 router.post("/cv/preview/pdf", preview_1.CVPreviewController.savePDF);
 router.post(`/cv/preview/generate_pdf/user_id/:user_id`, preview_1.CVPreviewController.generatePDF);
