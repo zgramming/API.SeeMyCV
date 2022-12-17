@@ -106,13 +106,6 @@ router.get(`/cv/contact/user_id/:users_id`, contact_1.CVContactController.get);
 router.get(`/v1/user/:username`, user_2.V1UserController.getByUsername);
 router.get(`/v1/portfolio/username/:username/slug/:slug`, portfolio_2.V1PortfolioController.getByUsernameAndSlug);
 //! V1 - Authentication
-// Run function on passport.ts on fn [googleStrategy()]
-// router.get(
-//   "/v1/google/signin",
-//   passport.authenticate("google", {
-//     scope: ["email", "profile"],
-//   })
-// );
 router.get("/v1/google/callback", koa_passport_1.default.authenticate("google", {
     scope: ["email", "profile"],
     successRedirect: "/auth/success",

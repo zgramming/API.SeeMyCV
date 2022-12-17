@@ -158,14 +158,6 @@ router.get(
 
 //! V1 - Authentication
 
-// Run function on passport.ts on fn [googleStrategy()]
-// router.get(
-//   "/v1/google/signin",
-//   passport.authenticate("google", {
-//     scope: ["email", "profile"],
-//   })
-// );
-
 router.get(
   "/v1/google/callback",
   passport.authenticate("google", {
