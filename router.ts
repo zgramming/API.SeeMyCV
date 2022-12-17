@@ -140,6 +140,10 @@ router.get(
   `/cv/preview/website/user_id/:user_id`,
   CVPreviewController.getPreviewWebsite
 );
+router.get(
+  `/cv/preview/website/username/:username`,
+  CVPreviewController.getPreviewWebsiteByUsername
+);
 router.post("/cv/preview/website", CVPreviewController.saveWebsite);
 router.post("/cv/preview/pdf", CVPreviewController.savePDF);
 router.post(

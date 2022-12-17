@@ -66,6 +66,38 @@ export class CVPreviewController {
     }
   }
 
+  public static async getPreviewWebsiteByUsername(
+    ctx: ParameterizedContext,
+    next: Next
+  ) {
+    try {
+      const { username } = ctx.params;
+      const result = await prisma.cVTemplateWebsite.findFirst({
+        where: {
+          user: {
+            username: username,
+          },
+        },
+        include: {
+          template_website: true,
+        },
+      });
+
+      ctx.status = 200;
+      return (ctx.body = {
+        success: true,
+        data: result,
+      });
+    } catch (error: any) {
+      console.log({ error: error });
+      ctx.status = error.code ?? 500;
+      return (ctx.body = {
+        success: false,
+        message: error?.message ?? "Unknown Message Error",
+      });
+    }
+  }
+
   public static async getDetailPreviewPDF(
     ctx: ParameterizedContext,
     next: Next

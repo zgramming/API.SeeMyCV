@@ -81,6 +81,37 @@ class CVPreviewController {
             }
         });
     }
+    static getPreviewWebsiteByUsername(ctx, next) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { username } = ctx.params;
+                const result = yield prisma.cVTemplateWebsite.findFirst({
+                    where: {
+                        user: {
+                            username: username,
+                        },
+                    },
+                    include: {
+                        template_website: true,
+                    },
+                });
+                ctx.status = 200;
+                return (ctx.body = {
+                    success: true,
+                    data: result,
+                });
+            }
+            catch (error) {
+                console.log({ error: error });
+                ctx.status = (_a = error.code) !== null && _a !== void 0 ? _a : 500;
+                return (ctx.body = {
+                    success: false,
+                    message: (_b = error === null || error === void 0 ? void 0 : error.message) !== null && _b !== void 0 ? _b : "Unknown Message Error",
+                });
+            }
+        });
+    }
     static getDetailPreviewPDF(ctx, next) {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
