@@ -115,7 +115,7 @@ router.get("/v1/google/callback", koa_passport_1.default.authenticate("google", 
 router.get("/v1/logout", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
-        (0, token_1.destroyCookiesUser)({ ctx, next });
+        (0, token_1.destroyCookiesUser)(ctx);
         const redirectUrl = (_a = process.env.WEB_URL_LOGIN) !== null && _a !== void 0 ? _a : "";
         return ctx.redirect(redirectUrl);
     }
@@ -129,7 +129,7 @@ router.get("/v1/logout", (ctx, next) => __awaiter(void 0, void 0, void 0, functi
 router.get("/auth/success", (ctx, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _c;
     try {
-        (0, token_1.setCookiesUser)({ ctx, next });
+        (0, token_1.setCookiesUser)(ctx, ctx.state.user);
         return ctx.redirect(`${process.env.WEB_BASEURL}`);
     }
     catch (error) {

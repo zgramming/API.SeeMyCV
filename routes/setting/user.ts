@@ -5,6 +5,7 @@ import { Next, ParameterizedContext } from "koa";
 import { PrismaClient, UserStatus } from "@prisma/client";
 
 import { ERROR_TYPE_VALIDATION } from "../../utils/constant";
+import { generateToken, setCookiesUser } from "../../utils/token";
 
 const validator = new Validator();
 const prisma = new PrismaClient();
@@ -184,9 +185,11 @@ export class SettingUserController {
         },
       });
       ctx.status = 200;
+
       return (ctx.body = {
         success: true,
         message: "Berhasil mengupdate nama menjadi " + name,
+        token: generateToken(update),
         data: update,
       });
     } catch (error: any) {

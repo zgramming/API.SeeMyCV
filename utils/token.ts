@@ -7,13 +7,12 @@ import { Next, ParameterizedContext } from "koa";
 
 import { Users } from "@prisma/client";
 
-import { KoaMiddlewareInterface } from "../interface/koa_middleware_interface";
 import { keyCookieAuth } from "./constant";
 
-export const setCookiesUser = ({ ctx, next }: KoaMiddlewareInterface) => {
+export const setCookiesUser = (ctx: ParameterizedContext, user: Users) => {
   const isDev = process.env.APP_ENV == "dev";
   const baseDomain = isDev ? undefined : process.env.BASE_DOMAIN;
-  const token = generateToken(ctx.state.user);
+  const token = generateToken(user);
   ctx.cookies.set(keyCookieAuth, token, {
     path: "/",
     sameSite: isDev ? undefined : "none",
@@ -26,7 +25,7 @@ export const setCookiesUser = ({ ctx, next }: KoaMiddlewareInterface) => {
   return true;
 };
 
-export const destroyCookiesUser = ({ ctx, next }: KoaMiddlewareInterface) => {
+export const destroyCookiesUser = (ctx: ParameterizedContext) => {
   const isDev = process.env.APP_ENV == "dev";
   const baseDomain = isDev ? undefined : process.env.BASE_DOMAIN;
   ctx.cookies.set(keyCookieAuth, "", {
