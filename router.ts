@@ -173,7 +173,7 @@ router.get(
 
 router.get("/v1/logout", async (ctx, next) => {
   try {
-    destroyCookiesUser({ ctx, next });
+    destroyCookiesUser(ctx);
     const redirectUrl = process.env.WEB_URL_LOGIN ?? "";
     return ctx.redirect(redirectUrl);
   } catch (error: any) {
@@ -186,7 +186,7 @@ router.get("/v1/logout", async (ctx, next) => {
 
 router.get("/auth/success", async (ctx, next) => {
   try {
-    setCookiesUser({ ctx, next });
+    setCookiesUser(ctx, ctx.state.user);
     return ctx.redirect(`${process.env.WEB_BASEURL}`);
   } catch (error: any) {
     return (ctx.body = {

@@ -26,10 +26,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyToken = exports.generateToken = exports.destroyCookiesUser = exports.setCookiesUser = void 0;
 const jsonwebtoken_1 = __importStar(require("jsonwebtoken"));
 const constant_1 = require("./constant");
-const setCookiesUser = ({ ctx, next }) => {
+const setCookiesUser = (ctx, user) => {
     const isDev = process.env.APP_ENV == "dev";
     const baseDomain = isDev ? undefined : process.env.BASE_DOMAIN;
-    const token = (0, exports.generateToken)(ctx.state.user);
+    const token = (0, exports.generateToken)(user);
     ctx.cookies.set(constant_1.keyCookieAuth, token, {
         path: "/",
         sameSite: isDev ? undefined : "none",
@@ -41,7 +41,7 @@ const setCookiesUser = ({ ctx, next }) => {
     return true;
 };
 exports.setCookiesUser = setCookiesUser;
-const destroyCookiesUser = ({ ctx, next }) => {
+const destroyCookiesUser = (ctx) => {
     const isDev = process.env.APP_ENV == "dev";
     const baseDomain = isDev ? undefined : process.env.BASE_DOMAIN;
     ctx.cookies.set(constant_1.keyCookieAuth, "", {

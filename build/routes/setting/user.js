@@ -17,6 +17,7 @@ const bcrypt_1 = require("bcrypt");
 const fastest_validator_1 = __importDefault(require("fastest-validator"));
 const client_1 = require("@prisma/client");
 const constant_1 = require("../../utils/constant");
+const token_1 = require("../../utils/token");
 const validator = new fastest_validator_1.default();
 const prisma = new client_1.PrismaClient();
 const saltRounds = 10;
@@ -152,6 +153,7 @@ class SettingUserController {
                 return (ctx.body = {
                     success: true,
                     message: "Berhasil mengupdate nama menjadi " + name,
+                    token: (0, token_1.generateToken)(update),
                     data: update,
                 });
             }
